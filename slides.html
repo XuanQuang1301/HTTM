@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tiến Độ Tuần 1 - Hệ Thống Phát Hiện Âm Thanh Nguy Hiểm</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==================== DESIGN SYSTEM & TOKENS (LIGHT THEME) ==================== */
+        :root {
+            --bg-body: #f8fafc;
+            --bg-slide: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f1f5f9;
+            --border-card: #e2e8f0;
+            --border-hover: #94a3b8;
+            
+            --primary: #1e3a8a;          /* Deep Corporate Navy */
+            --primary-accent: #2563eb;   /* Classic Academic Blue */
+            --secondary: #475569;        /* Slate Gray */
+            
+            --danger: #b91c1c;           /* Deep Red */
+            --warning: #b45309;          /* Amber */
+            --success: #15803d;          /* Forest Green */
+            --info: #1d4ed8;             /* Royal Blue */
+            
+            --text-main: #0f172a;        /* High Contrast Dark Slate */
+            --text-sub: #334155;         /* Dark Gray */
+            --text-muted: #64748b;       /* Medium Gray */
+            
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --transition-smooth: all 0.25s ease-in-out;
+            --shadow-subtle: 0 4px 12px rgba(15, 23, 42, 0.05);
+            --shadow-hover: 0 8px 24px rgba(15, 23, 42, 0.08);
+        }
+
+        /* ==================== BASE STYLES ==================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==================== LAYOUT & CONTAINER ==================== */
+        .presentation-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            background: var(--bg-body);
+        }
+
+        /* Header Bar */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.9rem 2.5rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-card);
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-main);
+        }
+
+        .brand-badge {
+            background: var(--primary);
+            color: #ffffff;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+
+        .header-section-title {
+            font-size: 0.85rem;
+            color: var(--primary);
+            font-weight: 700;
+            background: #eff6ff;
+            padding: 0.35rem 1rem;
+            border-radius: 20px;
+            border: 1px solid #dbeafe;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #e2e8f0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            transition: width 0.3s ease;
+        }
+
+        /* Slide Viewport */
+        .slides-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 2rem 3.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(30px);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            background: var(--bg-slide);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .slide.prev-slide {
+            transform: translateX(-30px);
+        }
+
+        /* Slide Typography */
+        .slide-title-container {
+            margin-bottom: 1.25rem;
+            border-bottom: 2px solid var(--bg-card-subtle);
+            padding-bottom: 0.6rem;
+            flex-shrink: 0;
+        }
+
+        .slide-subtitle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.05rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--primary);
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            padding: 0.3rem 0.85rem;
+            border-radius: 6px;
+            margin-bottom: 0.6rem;
+        }
+
+        .slide-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+            line-height: 1.25;
+        }
+
+        /* Footer Controls */
+        .bottom-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2.5rem;
+            background: #ffffff;
+            border-top: 1px solid var(--border-card);
+            z-index: 10;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-nav {
+            background: #ffffff;
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            padding: 0 0.5rem;
+        }
+
+        .kbd-hints {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .kbd-key {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 0.15rem 0.4rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        /* ==================== CARD COMPONENTS ==================== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 1.5rem 1.75rem;
+            box-shadow: var(--shadow-subtle);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            border-color: var(--border-hover);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--bg-card-subtle);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .card-body {
+            font-size: 0.92rem;
+            color: var(--text-sub);
+            line-height: 1.55;
+        }
+
+        .card-body ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .card-body li {
+            position: relative;
+            padding-left: 1.25rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .card-body li:last-child {
+            margin-bottom: 0;
+        }
+
+        .card-body li::before {
+            content: "▪";
+            position: absolute;
+            left: 0.2rem;
+            color: var(--primary-accent);
+            font-size: 0.9rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .badge-danger {
+            background: #fef2f2;
+            color: var(--danger);
+            border: 1px solid #fecaca;
+        }
+
+        .badge-warning {
+            background: #fffbeb;
+            color: var(--warning);
+            border: 1px solid #fef3c7;
+        }
+
+        .badge-info {
+            background: #eff6ff;
+            color: var(--info);
+            border: 1px solid #dbeafe;
+        }
+
+        .badge-success {
+            background: #f0fdf4;
+            color: var(--success);
+            border: 1px solid #bbf7d0;
+        }
+
+        /* ==================== CUSTOM SLIDE CONTENT STYLES ==================== */
+        
+        /* Slide 1: Cover */
+        .cover-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1.5rem;
+        }
+
+        .cover-tag {
+            display: inline-block;
+            padding: 0.4rem 1.2rem;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 4px;
+            color: var(--primary);
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+        }
+
+        .cover-title {
+            font-size: 2.75rem;
+            font-weight: 800;
+            line-height: 1.2;
+            max-width: 900px;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+            letter-spacing: -0.03em;
+        }
+
+        .cover-title span {
+            color: var(--primary);
+        }
+
+        .cover-desc {
+            font-size: 1.1rem;
+            color: var(--text-sub);
+            max-width: 750px;
+            line-height: 1.55;
+            margin-bottom: 2rem;
+        }
+
+        .cover-meta {
+            display: flex;
+            gap: 2.25rem;
+            background: var(--bg-card-subtle);
+            border: 1px solid var(--border-card);
+            padding: 1.1rem 2.25rem;
+            border-radius: 8px;
+        }
+
+        .meta-item {
+            text-align: left;
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .meta-val {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            margin-top: 0.2rem;
+        }
+
+        /* Slide 2: Agenda */
+        .agenda-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            margin-top: 0.5rem;
+        }
+
+        .agenda-row {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .agenda-row:hover {
+            border-color: var(--primary);
+            background: #f8fafc;
+            transform: translateX(6px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .agenda-num {
+            font-family: var(--font-mono);
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            min-width: 40px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        .agenda-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 1.5rem;
+        }
+
+        .agenda-info h4 {
+            color: var(--text-main);
+            font-size: 1rem;
+            font-weight: 700;
+            min-width: 270px;
+            margin: 0;
+        }
+
+        .agenda-info p {
+            color: var(--text-sub);
+            font-size: 0.88rem;
+            line-height: 1.4;
+            flex: 1;
+            margin: 0;
+        }
+
+        /* Slide 6: Audio Threat Table */
+        .threat-table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-card);
+            background: #ffffff;
+            box-shadow: var(--shadow-subtle);
+            margin-top: 0.5rem;
+        }
+
+        .threat-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.88rem;
+        }
+
+        .threat-table th {
+            background: var(--bg-card-subtle);
+            color: var(--text-main);
+            padding: 0.75rem 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid var(--border-card);
+        }
+
+        .threat-table td {
+            padding: 0.7rem 0.9rem;
+            border-bottom: 1px solid var(--border-card);
+            color: var(--text-sub);
+            vertical-align: middle;
+        }
+
+        .threat-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .threat-table tr:hover {
+            background: #f8fafc;
+        }
+
+        .label-code {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* Slide 7: Architecture Blocks & Pipeline Flow */
+        .arch-flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+            position: relative;
+            margin-top: 0.65rem;
+        }
+
+        .arch-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 1.35rem 1.15rem;
+            position: relative;
+            box-shadow: var(--shadow-subtle);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            transition: var(--transition-smooth);
+            border-top: 4px solid var(--primary);
+        }
+
+        .arch-step:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-3px);
+        }
+
+        .arch-step-num {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: var(--primary);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.65rem;
+            border-radius: 4px;
+            margin-bottom: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            width: fit-content;
+        }
+
+        .arch-step h4 {
+            color: var(--text-main);
+            font-size: 1.08rem;
+            margin-bottom: 0.6rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .pipeline-bar, .pipeline-container {
+            background: #ffffff;
+            border: 1px solid var(--border-card);
+            padding: 0.85rem 1.25rem;
+            border-radius: 10px;
+            margin-top: 1.25rem;
+            box-shadow: var(--shadow-subtle);
+            width: 100%;
+        }
+
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+
+        .pipeline-bar > span:not(.pipeline-arrow), .pipeline-node {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 0.6rem 0.9rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+            flex: 1;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 0.88rem;
+        }
+
+        .pipeline-bar > span:last-child, .pipeline-node.active-node {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .pipeline-arrow {
+            color: var(--primary-accent);
+            font-weight: 900;
+            font-size: 1.05rem;
+            flex-shrink: 0;
+            padding: 0 0.2rem;
+        }
+
+        /* Slide 9: Roadmap Timeline */
+        .timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+            margin-top: 0.5rem;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 85px 1fr;
+            gap: 1.1rem;
+            align-items: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 8px;
+            padding: 0.7rem 1.1rem;
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .timeline-item.active-week {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .week-badge {
+            font-family: var(--font-mono);
+            font-weight: 800;
+            font-size: 0.82rem;
+            padding: 0.35rem 0.5rem;
+            border-radius: 4px;
+            text-align: center;
+            background: var(--bg-card-subtle);
+            color: var(--text-sub);
+            border: 1px solid var(--border-card);
+        }
+
+        .active-week .week-badge {
+            background: var(--primary);
+            color: #ffffff;
+            border-color: var(--primary);
+        }
+
+        .week-content h4 {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            margin-bottom: 0.15rem;
+            font-weight: 700;
+        }
+
+        .week-content p {
+            color: var(--text-sub);
+            font-size: 0.85rem;
+            line-height: 1.35;
+        }
+
+        /* Modal Overview */
+        .overview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition-smooth);
+            padding: 3rem;
+            overflow-y: auto;
+        }
+
+        .overview-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .overview-container {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-card);
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.25rem;
+        }
+
+        .thumb-card {
+            background: var(--bg-slide);
+            border: 1px solid var(--border-card);
+            border-radius: 8px;
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .thumb-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .thumb-card.current {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .thumb-num {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .thumb-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        /* ==================== PRINT STYLES ==================== */
+        @media print {
+            body {
+                overflow: visible !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .top-header, .bottom-footer, .overview-modal {
+                display: none !important;
+            }
+            .slide {
+                position: relative !important;
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                page-break-after: always !important;
+                height: 100vh !important;
+                width: 100vw !important;
+                padding: 2cm !important;
+                background: #ffffff !important;
+                color: #000000 !important;
+            }
+            .card {
+                background: #ffffff !important;
+                border: 1px solid #cbd5e1 !important;
+                box-shadow: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-brand">
+                <span class="brand-badge">HTTM</span>
+                <span>Hệ Thống Phát Hiện Âm Thanh Nguy Hiểm</span>
+            </div>
+            <div class="header-section-title" id="section-title">Phần I: Tổng quan dự án</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </header>
+
+        <!-- Slides Viewport -->
+        <main class="slides-viewport">
+
+            <!-- SLIDE 1: Cover -->
+            <section class="slide active" data-section="Báo Cáo Tiến Độ Tuần 1">
+                <div class="cover-container">
+                    <div class="cover-tag">
+                        BÁO CÁO TIẾN ĐỘ TUẦN 1 • MÔN HỌC HỆ THỐNG THÔNG MINH
+                    </div>
+                    <h1 class="cover-title">
+                        Phát Hiện & Cảnh Báo <br>
+                        <span>Âm Thanh Nguy Hiểm</span>
+                    </h1>
+                    
+                    <div class="cover-meta">
+                        <div class="meta-item">
+                            <div class="meta-label">Sinh Viên Thực Hiện</div>
+                            <div class="meta-val" style="color: var(--primary); font-weight: 800; line-height: 1.4;">
+                                • Lê Thanh Thủy - B23DCCN809<br>
+                                • Đặng Xuân Quang - B23DCCN686
+                            </div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Môn Học</div>
+                            <div class="meta-val">Hệ Thống Thông Minh (HTTM)</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Đơn Vị</div>
+                            <div class="meta-val">PTIT - Học viện Bưu chính Viễn thông</div>
+                        </div>
+                        <div class="meta-item">
+                            <div class="meta-label">Thời Gian</div>
+                            <div class="meta-val">Học Kỳ I - Năm 4</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: Agenda -->
+            <section class="slide" data-section="Mở Đầu Tổng Quan">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Tổng Quan Chương Trình</div>
+                    <h2 class="slide-title">Mục Lục Nội Dung (6 Phần)</h2>
+                </div>
+                <div class="agenda-list">
+                    <div class="agenda-row" onclick="goToSlide(2)">
+                        <div class="agenda-num">01</div>
+                        <div class="agenda-info">
+                            <h4>Tổng Quan & Đặt Vấn Đề</h4>
+                            <p>Lý do chọn đề tài, tính cấp thiết, mục tiêu và tính mới hệ thống.</p>
+                        </div>
+                    </div>
+                    <div class="agenda-row" onclick="goToSlide(4)">
+                        <div class="agenda-num">02</div>
+                        <div class="agenda-info">
+                            <h4>Phân Tích Yêu Cầu Bài Toán</h4>
+                            <p>Yêu cầu chức năng, phi chức năng và danh mục 6 nhãn âm thanh nguy hiểm.</p>
+                        </div>
+                    </div>
+                    <div class="agenda-row" onclick="goToSlide(6)">
+                        <div class="agenda-num">03</div>
+                        <div class="agenda-info">
+                            <h4>Thiết Kế Kiến Trúc Hệ Thống</h4>
+                            <p>Kiến trúc 4 khối chức năng nối tiếp và luồng dữ liệu thời gian thực (Data Pipeline).</p>
+                        </div>
+                    </div>
+                    <div class="agenda-row" onclick="goToSlide(7)">
+                        <div class="agenda-num">04</div>
+                        <div class="agenda-info">
+                            <h4>Khảo Sát Công Nghệ & AI</h4>
+                            <p>Mel-Spectrogram 2D, khảo sát CNN/YAMNet, tập dữ liệu ESC-50 & tech stack.</p>
+                        </div>
+                    </div>
+                    <div class="agenda-row" onclick="goToSlide(8)">
+                        <div class="agenda-num">05</div>
+                        <div class="agenda-info">
+                            <h4>Kế Hoạch Dự Án (Roadmap)</h4>
+                            <p>Lộ trình thực hiện chi tiết cho 6 tuần từ nghiên cứu đến hoàn thiện báo cáo.</p>
+                        </div>
+                    </div>
+                    <div class="agenda-row" onclick="goToSlide(9)">
+                        <div class="agenda-num">06</div>
+                        <div class="agenda-info">
+                            <h4>Kết Quả T1 & Kế Hoạch T2</h4>
+                            <p>Đánh giá kết quả đạt được trong Tuần 1 và các công việc trọng tâm Tuần 2.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Part I - Overview & Problem Statement -->
+            <section class="slide" data-section="Phần I: Tổng Quan & Đặt Vấn Đề">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần I: Tổng Quan Dự Án</div>
+                    <h2 class="slide-title">Lý Do Chọn Đề Tài & Tính Thực Tiễn</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Thực Trạng & Thách Thức</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Sự cố đột ngột:</strong> Cháy nổ, bạo lực, đột nhập phát sinh bất ngờ, hậu quả nghiêm trọng.</li>
+                                <li><strong>Phản ứng chậm:</strong> Con người khó giám sát 24/7 và phản ứng trong "thời gian vàng".</li>
+                                <li><strong>Hạn chế Camera:</strong> Giám sát hình ảnh dễ bị che khuất bởi góc tối, khói bụi.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Giải Pháp Âm Thanh Thông Minh</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Phát hiện sớm:</strong> Âm thanh đặc trưng (la hét, nổ, vỡ kính) phát ra ngay khi sự cố khởi phát.</li>
+                                <li><strong>Giám sát 24/7:</strong> Xử lý & phân loại tín hiệu âm thanh theo thời gian thực (Real-time).</li>
+                                <li><strong>Phản ứng tự động:</strong> Tự động kích hoạt còi hú, ngắt điện & gửi tin nhắn SOS tức thì.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: Part I - Objectives & Innovation -->
+            <section class="slide" data-section="Phần I: Mục Tiêu & Tính Mới">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần I: Tổng Quan Dự Án</div>
+                    <h2 class="slide-title">Mục Tiêu Hệ Thống & Tính Mới</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Mục Tiêu Cốt Lõi</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Xử lý thời gian thực:</strong> Tiếp nhận & phân tích luồng âm thanh môi trường liên tục.</li>
+                                <li><strong>Nhận dạng chính xác:</strong> Phân loại chuẩn xác các nhóm âm thanh nguy hiểm mục tiêu.</li>
+                                <li><strong>Lọc báo động giả:</strong> Xác thực logic theo ngưỡng độ tin cậy & chuỗi thời gian.</li>
+                                <li><strong>Phản ứng tự động:</strong> Phát còi báo động, mô phỏng ngắt điện & gửi SMS/Telegram SOS.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Phạm Vi & Tính Mới</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Chuyên sâu Audio AI:</strong> Kết hợp Xử lý tín hiệu âm thanh (Audio DSP) & Học sâu (Deep Learning).</li>
+                                <li><strong>Luồng End-to-End:</strong> Xây dựng hệ thống Real-time hoàn chỉnh (thay vì chỉ thử nghiệm dữ liệu tĩnh).</li>
+                                <li><strong>Tích hợp khép kín:</strong> Thu âm Micro &rarr; AI Suy luận &rarr; Chống nhiễu &rarr; Điều khiển thiết bị & Cảnh báo.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: Part II - Requirements -->
+            <section class="slide" data-section="Phần II: Phân Tích Yêu Cầu">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần II: Phân Tích Bài Toán</div>
+                    <h2 class="slide-title">Yêu Cầu Chức Năng & Phi Chức Năng</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Yêu Cầu Chức Năng</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Thu nhận & Tiền xử lý:</strong> Tiếp nhận Audio Stream, lọc nhiễu, trích Mel-Spectrogram 2D.</li>
+                                <li><strong>Suy luận AI:</strong> Mô hình Deep Learning dự đoán nhãn & trả về Confidence Score.</li>
+                                <li><strong>Lọc báo giả:</strong> Kiểm tra ngưỡng an toàn & xác thực qua Sliding Window.</li>
+                                <li><strong>Cảnh báo & Nhật ký:</strong> Bật còi hú, gửi Telegram Bot API & ghi log sự cố.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Yêu Cầu Phi Chức Năng</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Độ chính xác cao (Accuracy):</strong> Nhận dạng tối ưu các nhãn nguy hiểm, giảm tối đa bỏ sót.</li>
+                                <li><strong>Độ trễ thấp (Latency):</strong> Tổng thời gian phản ứng từ khi phát âm thanh <strong>&lt; 1.5 - 2.0 giây</strong>.</li>
+                                <li><strong>Khả năng chống nhiễu:</strong> Hoạt động ổn định trong môi trường tiếng ồn thực tế.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: Part II - Threat Labels & Scenarios -->
+            <section class="slide" data-section="Phần II: 6 Nhãn Âm Thanh">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần II: Phân Tích Bài Toán</div>
+                    <h2 class="slide-title">Danh Mục 6 Nhãn Âm Thanh & Kịch Bản Xử Lý</h2>
+                </div>
+                <div class="threat-table-container">
+                    <table class="threat-table">
+                        <thead>
+                            <tr>
+                                <th>STT</th>
+                                <th>Nhãn Âm Thanh (Label)</th>
+                                <th>Tình Huống Nhận Diện</th>
+                                <th>Kịch Bản Phản Ứng Tự Động</th>
+                                <th>Mức Ưu Tiên</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>01</td>
+                                <td><span class="label-code">Scream / Cry for help</span></td>
+                                <td>Tiếng la hét, kêu cứu, bạo lực</td>
+                                <td>• Bật còi hú tại chỗ<br>• Gửi SOS đến Telegram BQL</td>
+                                <td><span class="badge badge-danger">Khẩn cấp</span></td>
+                            </tr>
+                            <tr>
+                                <td>02</td>
+                                <td><span class="label-code">Explosion / Gunshot</span></td>
+                                <td>Nổ gas, chập điện, tiếng súng</td>
+                                <td>• Rung chuông báo động toàn hệ thống<br>• Gửi cảnh báo nguy hiểm tối khẩn</td>
+                                <td><span class="badge badge-danger">Tối khẩn</span></td>
+                            </tr>
+                            <tr>
+                                <td>03</td>
+                                <td><span class="label-code">Glass Breaking</span></td>
+                                <td>Đập phá, vỡ kính cửa đột nhập</td>
+                                <td>• Phát còi cảnh báo tại điểm sự cố<br>• Gửi thông báo nghi vấn đột nhập đến an ninh</td>
+                                <td><span class="badge badge-warning">Cao</span></td>
+                            </tr>
+                            <tr>
+                                <td>04</td>
+                                <td><span class="label-code">Fire Alarm / Siren</span></td>
+                                <td>Còi báo cháy, chuông sự cố kỹ thuật</td>
+                                <td>• Gửi thông báo sơ tán khẩn cấp & cảnh báo cháy</td>
+                                <td><span class="badge badge-danger">Khẩn cấp</span></td>
+                            </tr>
+                            <tr>
+                                <td>05</td>
+                                <td><span class="label-code">Impact / Crash</span></td>
+                                <td>Va quẹt xe, ngã đổ vật nặng, chấn động</td>
+                                <td>• Gửi thông báo yêu cầu kiểm tra hiện trường<br>• Lưu lại trích đoạn âm thanh sự cố</td>
+                                <td><span class="badge badge-info">Trung bình</span></td>
+                            </tr>
+                            <tr>
+                                <td>06</td>
+                                <td><span class="label-code">Normal Background</span></td>
+                                <td>Nói chuyện, sinh hoạt, mưa, giao thông</td>
+                                <td>• Ghi nhận trạng thái bình thường<br>• Bỏ qua (không báo động)</td>
+                                <td><span class="badge badge-success">Bình thường</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: Part III - System Architecture -->
+            <section class="slide" data-section="Phần III: Kiến Trúc Hệ Thống">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần III: Thiết Kế Kiến Trúc</div>
+                    <h2 class="slide-title">Kiến Trúc 4 Khối Chức Năng & Luồng Dữ Liệu</h2>
+                </div>
+                <div class="arch-flow">
+                    <div class="arch-step">
+                        <span class="arch-step-num"><span>01</span> • Khối 1</span>
+                        <h4>Thu Nhận & Tiền Xử Lý</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-sub); line-height: 1.55;">
+                            • Đọc audio stream cửa sổ 1s - 2s.<br>
+                            • Chuẩn hóa tín hiệu & giảm nhiễu.<br>
+                            • Trích xuất <strong>Mel-Spectrogram 2D</strong>.
+                        </p>
+                    </div>
+                    <div class="arch-step">
+                        <span class="arch-step-num"><span>02</span> • Khối 2</span>
+                        <h4>Phân Loại & Suy Luận AI</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-sub); line-height: 1.55;">
+                            • Nhận input ảnh Mel-Spectrogram 2D.<br>
+                            • Suy luận qua <strong>CNN 2D / YAMNet</strong>.<br>
+                            • Trả về <strong>Confidence Score</strong> (0 - 100%).
+                        </p>
+                    </div>
+                    <div class="arch-step">
+                        <span class="arch-step-num"><span>03</span> • Khối 3</span>
+                        <h4>Quyết Định & Lọc Báo Giả</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-sub); line-height: 1.55;">
+                            • So sánh ngưỡng độ tin cậy (&gt; 85%).<br>
+                            • <strong>Sliding Window Verification:</strong> Xác nhận liên tục 2 - 3 khung hình.
+                        </p>
+                    </div>
+                    <div class="arch-step">
+                        <span class="arch-step-num"><span>04</span> • Khối 4</span>
+                        <h4>Kích Hoạt Hành Động</h4>
+                        <p style="font-size: 0.88rem; color: var(--text-sub); line-height: 1.55;">
+                            • Bật còi báo động loa khẩn cấp.<br>
+                            • Rơ-le điều khiển ngắt điện mô phỏng.<br>
+                            • Gửi tin nhắn <strong>Telegram Bot API</strong>.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="pipeline-container">
+                    <div class="pipeline-flow">
+                        <div class="pipeline-node">Nguồn Âm Thanh</div>
+                        <span class="pipeline-arrow">&rarr;</span>
+                        <div class="pipeline-node">Mel-Spectrogram 2D</div>
+                        <span class="pipeline-arrow">&rarr;</span>
+                        <div class="pipeline-node">AI Inference</div>
+                        <span class="pipeline-arrow">&rarr;</span>
+                        <div class="pipeline-node">Lọc Báo Giả</div>
+                        <span class="pipeline-arrow">&rarr;</span>
+                        <div class="pipeline-node active-node">Báo Động & Telegram SOS</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 8: Part IV - Technology & AI Models -->
+            <section class="slide" data-section="Phần IV: Khảo Sát Công Nghệ">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần IV: Công Nghệ & Mô Hình</div>
+                    <h2 class="slide-title">Phương Pháp Biểu Diễn & Mô Hình AI</h2>
+                </div>
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Biểu Diễn Đặc Trưng</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Chuyển tín hiệu sóng 1D thành ảnh 2D <strong>Mel-Spectrogram</strong>.</li>
+                                <li><strong>Ưu điểm:</strong> Tận dụng thế mạnh xử lý hình ảnh của mạng CNN 2D.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Mô Hình AI Khảo Sát</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>CNN 2D Custom:</strong> Siêu nhẹ, suy luận tốc độ cao.</li>
+                                <li><strong>MobileNetV3 / ResNet18:</strong> Độ chính xác cao, trích đặc trưng sâu.</li>
+                                <li><strong>YAMNet (Google):</strong> Pre-trained AudioSet, tối ưu cho real-time.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Dataset & Tech Stack</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Dataset:</strong> ESC-50, UrbanSound8K, AudioSet + dữ liệu thu thực tế.</li>
+                                <li><strong>Augmentation:</strong> Thêm tiếng ồn, biến đổi Pitch/Time.</li>
+                                <li><strong>Công nghệ:</strong> Python, Librosa, PyTorch/TensorFlow, Telegram API.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 9: Part V - Project Roadmap -->
+            <section class="slide" data-section="Phần V: Kế Hoạch 6 Tuần">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần V: Kế Hoạch Thực Hiện</div>
+                    <h2 class="slide-title">Lộ Trình Dự Án (Roadmap 6 Tuần)</h2>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item active-week">
+                        <div class="week-badge">TUẦN 1</div>
+                        <div class="week-content">
+                            <h4>Phân tích yêu cầu & Thiết kế kiến trúc (Hoàn thành)</h4>
+                            <p>Phân tích bài toán, thiết kế kiến trúc 4 khối, chọn dataset & mô hình AI.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="week-badge">TUẦN 2</div>
+                        <div class="week-content">
+                            <h4>Thu thập, chuẩn hóa dữ liệu & Xây dựng Module Mel-Spectrogram</h4>
+                            <p>Tải dataset (ESC-50, UrbanSound8K), lập trình chuyển đổi Mel-Spectrogram & Data Augmentation.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="week-badge">TUẦN 3</div>
+                        <div class="week-content">
+                            <h4>Huấn luyện & Đánh giá mô hình AI</h4>
+                            <p>Train CNN 2D, ResNet, YAMNet; đánh giá Accuracy & Latency để chọn model tối ưu.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="week-badge">TUẦN 4</div>
+                        <div class="week-content">
+                            <h4>Xây dựng Module Real-time Stream & Anti-False Alarm</h4>
+                            <p>Lập trình tiếp nhận âm thanh trực tiếp từ Micro & cài đặt thuật toán Sliding Window.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="week-badge">TUẦN 5</div>
+                        <div class="week-content">
+                            <h4>Phát triển Web Dashboard & Kích hoạt Cảnh báo</h4>
+                            <p>Dựng giao diện Web giám sát, ngắt điện mô phỏng, còi báo động & tích hợp Telegram Bot API.</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="week-badge">TUẦN 6</div>
+                        <div class="week-content">
+                            <h4>Kiểm thử tích hợp & Hoàn thiện báo cáo</h4>
+                            <p>Kiểm thử hệ thống theo kịch bản thực tế, đo độ trễ tổng thể & hoàn thiện tài liệu/slides.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 10: Part VI - Week 1 Results & Week 2 Plan -->
+            <section class="slide" data-section="Phần VI: Kết Quả & Kế Hoạch">
+                <div class="slide-title-container">
+                    <div class="slide-subtitle">Phần VI: Đánh Giá & Hướng Đi</div>
+                    <h2 class="slide-title">Kết Quả Tuần 1 & Kế Hoạch Tuần 2</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Kết Quả Đạt Được Trong Tuần 1</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Xác định bài toán:</strong> Chốt 6 nhãn âm thanh mục tiêu & kịch bản phản ứng tự động.</li>
+                                <li><strong>Thiết kế kiến trúc:</strong> Hoàn thành sơ đồ 4 khối chức năng logic cho luồng Real-time.</li>
+                                <li><strong>Lựa chọn công nghệ:</strong> Chốt biểu diễn Mel-Spectrogram 2D + CNN 2D / YAMNet.</li>
+                                <li><strong>Lập lộ trình:</strong> Hoàn thiện kế hoạch chi tiết cho toàn bộ 6 tuần.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Kế Hoạch Trọng Tâm Tuần 2</h3>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Thu thập dữ liệu:</strong> Tải & lọc âm thanh từ các bộ dữ liệu ESC-50, UrbanSound8K.</li>
+                                <li><strong>Module tiền xử lý:</strong> Lập trình script tự động hóa chuyển đổi Waveform &rarr; Mel-Spectrogram.</li>
+                                <li><strong>Chuẩn bị Dataset:</strong> Đóng gói các tập Train/Val/Test sẵn sàng cho huấn luyện ở Tuần 3.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 11: Q&A / Thank You -->
+            <section class="slide" data-section="Kết Thúc & Thảo Luận">
+                <div class="cover-container">
+                    <div class="cover-tag" style="background: #f0fdf4; border-color: #bbf7d0; color: var(--success);">
+                        THANK YOU FOR LISTENING
+                    </div>
+                    <h1 class="cover-title">Cảm Ơn Thầy Cô & Các Bạn!</h1>
+                    <p class="cover-desc">
+                        Nhóm rất mong nhận được những ý kiến đóng góp quý báu từ thầy cô và các bạn để hoàn thiện dự án trong các tuần tiếp theo.
+                    </p>
+                    <div class="cover-meta" style="margin-top: 1rem;">
+                        <div class="meta-item" style="text-align: center;">
+                            <div class="meta-label">Hỏi & Đáp</div>
+                            <div class="meta-val" style="color: var(--primary); font-size: 1.2rem; margin-top: 0.2rem;">Q & A SESSION</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Footer -->
+        <footer class="bottom-footer">
+            <div class="nav-controls">
+                <button class="btn-nav" id="btn-prev" onclick="prevSlide()" title="Slide Trước">‹ Trước</button>
+                <button class="btn-nav" id="btn-next" onclick="nextSlide()" title="Slide Sau">Sau ›</button>
+                <span class="slide-counter" id="slide-counter">01 / 11</span>
+            </div>
+            <div class="kbd-hints">
+                <span><span class="kbd-key">←</span> <span class="kbd-key">→</span> Chuyển Slide</span>
+                <span><span class="kbd-key">F</span> Toàn màn hình</span>
+                <span><span class="kbd-key">O</span> Tổng quan Slide</span>
+            </div>
+            <div class="nav-controls">
+                <button class="btn-nav" onclick="toggleOverview()" title="Xem lưới Slide">Tổng quan (O)</button>
+                <button class="btn-nav" onclick="toggleFullscreen()" title="Toàn màn hình">Toàn màn hình (F)</button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Slide Overview Grid Modal -->
+    <div class="overview-modal" id="overview-modal">
+        <div class="overview-container">
+            <div class="overview-header">
+                <h2 style="color: var(--text-main); font-size: 1.4rem; font-weight: 800;">Tổng Quan Tất Cả Slide</h2>
+                <button class="btn-nav" onclick="toggleOverview()">✕ Đóng</button>
+            </div>
+            <div class="overview-grid" id="overview-grid">
+                <!-- Grid cards injected dynamically by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== INTERACTION SCRIPT ==================== -->
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        const progressBar = document.getElementById('progress-bar');
+        const slideCounter = document.getElementById('slide-counter');
+        const sectionTitle = document.getElementById('section-title');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const overviewModal = document.getElementById('overview-modal');
+        const overviewGrid = document.getElementById('overview-grid');
+
+        // Initialize presentation
+        function initPresentation() {
+            buildOverviewGrid();
+            updateSlideView();
+        }
+
+        // Update Slide Display
+        function updateSlideView() {
+            slides.forEach((slide, idx) => {
+                slide.classList.remove('active', 'prev-slide');
+                if (idx === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else if (idx < currentSlideIndex) {
+                    slide.classList.add('prev-slide');
+                }
+            });
+
+            // Update Header & Progress
+            const currentSection = slides[currentSlideIndex].getAttribute('data-section') || 'Báo Cáo HTTM';
+            sectionTitle.textContent = currentSection;
+
+            const progress = ((currentSlideIndex + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progress}%`;
+
+            // Update Counter & Buttons
+            const formattedCurrent = String(currentSlideIndex + 1).padStart(2, '0');
+            const formattedTotal = String(totalSlides).padStart(2, '0');
+            slideCounter.textContent = `${formattedCurrent} / ${formattedTotal}`;
+
+            btnPrev.disabled = currentSlideIndex === 0;
+            btnNext.disabled = currentSlideIndex === totalSlides - 1;
+
+            // Highlight Active Card in Overview
+            const overviewCards = overviewGrid.querySelectorAll('.thumb-card');
+            overviewCards.forEach((card, idx) => {
+                if (idx === currentSlideIndex) {
+                    card.classList.add('current');
+                } else {
+                    card.classList.remove('current');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                currentSlideIndex++;
+                updateSlideView();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlideView();
+            }
+        }
+
+        function goToSlide(index) {
+            if (index >= 0 && index < totalSlides) {
+                currentSlideIndex = index;
+                updateSlideView();
+                closeOverview();
+            }
+        }
+
+        // Build Overview Modal Grid
+        function buildOverviewGrid() {
+            overviewGrid.innerHTML = '';
+            slides.forEach((slide, idx) => {
+                const titleElem = slide.querySelector('.slide-title') || slide.querySelector('.cover-title');
+                const titleText = titleElem ? titleElem.innerText.replace('\n', ' ') : `Slide ${idx + 1}`;
+                
+                const card = document.createElement('div');
+                card.className = `thumb-card ${idx === currentSlideIndex ? 'current' : ''}`;
+                card.onclick = () => goToSlide(idx);
+
+                card.innerHTML = `
+                    <div class="thumb-num">SLIDE ${String(idx + 1).padStart(2, '0')}</div>
+                    <div class="thumb-title">${titleText}</div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted);">${slide.getAttribute('data-section') || ''}</div>
+                `;
+                overviewGrid.appendChild(card);
+            });
+        }
+
+        function toggleOverview() {
+            overviewModal.classList.toggle('active');
+        }
+
+        function closeOverview() {
+            overviewModal.classList.remove('active');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        // Keyboard Controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+                if (!overviewModal.classList.contains('active')) {
+                    nextSlide();
+                }
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+                if (!overviewModal.classList.contains('active')) {
+                    prevSlide();
+                }
+            } else if (e.key === 'Home') {
+                goToSlide(0);
+            } else if (e.key === 'End') {
+                goToSlide(totalSlides - 1);
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            } else if (e.key === 'o' || e.key === 'O') {
+                toggleOverview();
+            } else if (e.key === 'Escape') {
+                closeOverview();
+            }
+        });
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', initPresentation);
+    </script>
+</body>
+</html>
