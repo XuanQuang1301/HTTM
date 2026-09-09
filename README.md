@@ -1,13 +1,13 @@
-# 🚨 Hệ Thống Thông Minh Phát Hiện & Cảnh Báo Âm Thanh Nguy Hiểm Tích Hợp Cơ Chế Gửi Thông Báo Khẩn Cấp
+# Hệ Thống Thông Minh Phát Hiện & Cảnh Báo Âm Thanh Nguy Hiểm Tích Hợp Cơ Chế Gửi Thông Báo Khẩn Cấp
 
 > **Môn học:** Hệ Thống Thông Minh (HTTM)  
 > **Đơn vị:** Học viện Công nghệ Bưu chính Viễn thông (PTIT)  
-> **Slide Báo Cáo:** [slides.html](file:///d:/PTIT/Nam_4_1\HTTM\slides.html)  
-> **Chi Tiết Tuần 1:** [Docs/Tuan1.md](file:///d:/PTIT/Nam_4_1\HTTM\Docs\Tuan1.md)
+> **Slide Báo Cáo:** [slides.html](file:///d:/PTIT/Nam_4_1/HTTM/slides.html)  
+> **Chi Tiết Tuần 1:** [Docs/Tuan1.md](file:///d:/PTIT/Nam_4_1/HTTM/Docs/Tuan1.md)
 
 ---
 
-## 👥 Thành Viên Thực Hiện
+## Thành Viên Thực Hiện
 
 | STT | Họ và Tên | Mã Sinh Viên | Vai trò |
 | :---: | :--- | :---: | :--- |
@@ -41,7 +41,7 @@ Phần lớn các sự cố nguy hiểm đều phát ra âm thanh đặc trưng 
 * **Yêu cầu chức năng:** Thu nhận âm thanh liên tục -> Tiền xử lý (lọc nhiễu, trích xuất Mel-Spectrogram) -> Suy luận AI (Confidence Score) -> Xử lý logic & Chống báo động giả -> Cảnh báo (Loa, Relay ngắt điện, Telegram API / SMS) -> Nhật ký sự cố.
 * **Yêu cầu phi chức năng:**
   * **Độ chính xác (Accuracy):** Cao trên các lớp âm thanh nguy hiểm.
-  * **Thời gian phản ứng (Latency):** $\le 1.5 - 2.0$ giây từ khi phát ra âm thanh đến khi cảnh báo.
+  * **Thời gian phản ứng (Latency):** Không quá 1.5 - 2.0 giây từ khi phát ra âm thanh đến khi cảnh báo.
   * **Khả năng chống nhiễu (Robustness):** Hoạt động ổn định trong môi trường tiếng ồn hỗn hợp.
 
 ### 2. Danh mục 6 nhãn âm thanh & Kịch bản xử lý
@@ -107,20 +107,20 @@ graph LR
 
 ## VI. KẾT QUẢ TUẦN 1 & HƯỚNG PHÁT TRIỂN TUẦN 2
 
-### 🎯 Kết quả đạt được trong Tuần 1
-- ✅ Hoàn thành bản phân tích bài toán và xác định rõ 6 nhóm nhãn âm thanh mục tiêu kèm kịch bản phản ứng.
-- ✅ Hoàn thành thiết kế kiến trúc 4 khối chức năng logic & khả thi.
-- ✅ Xác định hướng tiếp cận công nghệ chính: Chuyển đổi Mel-Spectrogram + Mô hình CNN 2D / YAMNet.
-- ✅ Lập kế hoạch thực hiện dự án 6 tuần chi tiết.
+### Kết quả đạt được trong Tuần 1
+- Hoàn thành bản phân tích bài toán và xác định rõ 6 nhóm nhãn âm thanh mục tiêu kèm kịch bản phản ứng.
+- Hoàn thành thiết kế kiến trúc 4 khối chức năng logic & khả thi.
+- Xác định hướng tiếp cận công nghệ chính: Chuyển đổi Mel-Spectrogram + Mô hình CNN 2D / YAMNet.
+- Lập kế hoạch thực hiện dự án 6 tuần chi tiết.
 
-### 🚀 Kế hoạch công việc Tuần 2
-- 📥 Tải và trích xuất dữ liệu âm thanh từ các tập dữ liệu công cộng (ESC-50, UrbanSound8K).
-- 📦 Đóng gói mã nguồn tiền xử lý dữ liệu âm thanh và trích xuất Mel-Spectrogram chuẩn hóa.
-- 🧪 Chuẩn bị tập dữ liệu huấn luyện và kiểm thử sẵn sàng cho bước huấn luyện mô hình ở Tuần 3.
+### Kế hoạch công việc Tuần 2
+- Tải và trích xuất dữ liệu âm thanh từ các tập dữ liệu công cộng (ESC-50, UrbanSound8K).
+- Đóng gói mã nguồn tiền xử lý dữ liệu âm thanh và trích xuất Mel-Spectrogram chuẩn hóa.
+- Chuẩn bị tập dữ liệu huấn luyện và kiểm thử sẵn sàng cho bước huấn luyện mô hình ở Tuần 3.
 
 ---
 
-## 📂 CẤU TRÚC THƯ MỤC DỰ ÁN
+## CẤU TRÚC THƯ MỤC DỰ ÁN
 
 ```text
 HTTM/
