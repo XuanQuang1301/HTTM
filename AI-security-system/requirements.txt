@@ -1,0 +1,10 @@
+ultralytics
+opencv-python
+tensorflow
+tensorflow-hub
+numpy
+pygame
+pyaudio
+RPi.GPIO
+python-dotenv
+matplotlib

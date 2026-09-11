@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.pyo
+
+.env
+
+.vscode/
+
+.DS_Store
+Thumbs.db
+
+*.tflite
+*.pt
+*.log
