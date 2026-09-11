@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #64748b;
+  --primary-color: #2563eb;
+  --danger-color: #dc2626;
+  --danger-bg: #fef2f2;
+  --success-color: #16a34a;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Minimalist Clean Card */
+.clean-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.clean-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+}
+
+/* Alert Banner Light */
+.alert-banner-light {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.1);
+  animation: pulse-border 1.5s infinite alternate;
+}
+
+@keyframes pulse-border {
+  from { border-color: #fca5a5; }
+  to { border-color: #ef4444; }
+}
+
+/* Compact Buttons */
+.btn-compact {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: #ffffff;
+}
+.btn-danger:hover {
+  background-color: #b91c1c;
+}
+
+.btn-outline {
+  background-color: #ffffff;
+  border-color: #cbd5e1;
+  color: #334155;
+}
+.btn-outline:hover {
+  background-color: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.btn-stop-alert {
+  background-color: #dc2626;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 13px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(220, 38, 38, 0.2);
+  transition: all 0.15s ease;
+}
+.btn-stop-alert:hover {
+  background-color: #991b1b;
+}
+
+/* Progress Bar Clean */
+.progress-bg {
+  background-color: #f1f5f9;
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}

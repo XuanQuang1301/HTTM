@@ -1,10 +1,21 @@
-# Hướng Dẫn Test Nhanh Dự Án AI Security System
+# AI Security System - Monorepo Dashboard
 
-Dự án đã chuẩn bị sẵn 2 file âm thanh mẫu (.mp3) và script test nhận diện âm thanh nguy hiểm bằng AI (mô hình Google YAMNet).
+Hệ thống an ninh tích hợp AI nhận diện và phân loại âm thanh thời gian thực (sử dụng mô hình Google YAMNet AI).
 
 ---
 
-## Bước 1: Mở Terminal tại thư mục AI-security-system
+## Yêu Cầu Môi Trường Cần Cài Đặt Ban Đầu
+
+Trước khi bắt đầu cài đặt dự án trên máy mới, hãy đảm bảo máy tính đã cài đặt các công cụ sau:
+
+1. **Python** (Phiên bản 3.10 trở lên): [Tải tại python.org](https://www.python.org/downloads/)
+2. **Node.js** (Phiên bản 18.0 trở lên và npm 9+): [Tải tại nodejs.org](https://nodejs.org/)
+
+---
+
+## Hướng Dẫn Cài Đặt Môi Trường Từ Đầu (Step-by-Step)
+
+### BƯỚC 1: Mở Terminal và di chuyển vào thư mục dự án
 
 ```powershell
 cd AI-security-system
@@ -12,44 +23,89 @@ cd AI-security-system
 
 ---
 
-## Bước 2: Chạy Test Với 2 File MP3 Có Sẵn
+### BƯỚC 2: Cài đặt Môi trường Python Backend (venv)
 
-### 1. Test File 1: Tiếng nổ (dragon-studio-nuclear-explosion-386181.mp3)
+1. **Tạo môi trường ảo venv:**
+   ```powershell
+   python -m venv venv
+   ```
 
-Chạy lệnh trong Terminal:
-```powershell
-.\venv\Scripts\python yamnet_audio_classification/test_file.py dragon-studio-nuclear-explosion-386181.mp3
-```
-
-* **Kết quả kỳ vọng:** 
-  * AI nhận diện `Explosion` (Tiếng nổ) đạt độ tin cậy **> 83%**.
-  * Hiển thị: `[ALERT] DANGER DETECTED!`
-  * Loa máy tính tự động hú còi báo động `alarm.WAV`.
-
----
-
-### 2. Test File 2: Tiếng khóc (pataponai-hatapon-crying-344088.mp3)
-
-Chạy lệnh trong Terminal:
-```powershell
-.\venv\Scripts\python yamnet_audio_classification/test_file.py pataponai-hatapon-crying-344088.mp3
-```
-
-* **Kết quả kỳ vọng:** 
-  * AI nhận diện `Crying, sobbing` (Tiếng khóc lóc) đạt độ tin cậy **> 99%**.
-  * Hiển thị: `[ALERT] DANGER DETECTED!`
-  * Loa máy tính tự động hú còi báo động `alarm.WAV`.
+2. **Cài đặt các thư viện Python từ requirements.txt:**
+   ```powershell
+   .\venv\Scripts\python -m pip install --upgrade pip
+   .\venv\Scripts\pip install -r requirements.txt
+   ```
 
 ---
 
-## Chạy Nhận Diện Realtime (Tùy Chọn)
+### BƯỚC 3: Cài đặt Thư viện Frontend & Monorepo (Node.js)
 
-* **Nhận diện âm thanh Realtime qua Microphone:**
-  ```powershell
-  .\venv\Scripts\python yamnet_audio_classification/audio_detect.py
-  ```
+Tại thư mục gốc dự án (AI-security-system), chạy lệnh:
 
-* **Nhận diện vũ khí (Súng/Dao) qua Webcam:**
-  ```powershell
-  .\venv\Scripts\python yolov8_image_classification/image_detect.py
-  ```
+```powershell
+npm install
+```
+*Lệnh này sẽ tự động cài đặt Turborepo, Concurrently và toàn bộ thư viện React cho Frontend.*
+
+---
+
+### BƯỚC 4: Cấu Hình Biến Môi Trường (.env)
+
+1. **Tạo file .env từ file mẫu .env.example:**
+   ```powershell
+   Copy-Item .env.example .env
+   ```
+   *(Hoặc tạo file .env tại thư mục gốc dự án AI-security-system/.env)*
+
+2. **Nội dung tệp .env cấu hình URL kết nối:**
+   ```env
+   # Backend Server Host & Port
+   HOST=127.0.0.1
+   PORT=8000
+
+   # URL Frontend kết nối tới Backend API (được đọc bởi React Vite)
+   VITE_API_BASE_URL=http://127.0.0.1:8000
+   ```
+
+---
+
+## KHỞI CHẠY DỰ ÁN (Monorepo 1 Lệnh Duy Nhất)
+
+Sau khi cài đặt xong môi trường, bạn chỉ cần gõ 1 lệnh duy nhất:
+
+```powershell
+npm run dev
+```
+
+Turborepo sẽ tự động kích hoạt song song 2 dịch vụ:
+- **Frontend Web Dashboard**: http://localhost:5173
+- **Backend FastAPI**: http://127.0.0.1:8000 (Swagger Docs: http://127.0.0.1:8000/docs)
+
+---
+
+## Các Lệnh Phụ Trợ (Tùy Chọn)
+
+- **Chạy riêng lẻ Backend:** `npm run dev:backend`
+- **Chạy riêng lẻ Frontend:** `npm run dev:frontend`
+- **Chạy Monorepo log phân màu (Concurrently):** `npm run dev:all`
+
+---
+
+## Cấu Trúc Thư Mục Dự Án Monorepo
+
+```
+AI-security-system/
+├── .env                 # File biến môi trường gốc (VITE_API_BASE_URL, PORT,...)
+├── .env.example         # File mẫu hướng dẫn cấu hình biến môi trường
+├── package.json         # Cấu hình Monorepo Workspaces & Turborepo
+├── turbo.json           # Cấu hình pipeline Turborepo
+├── requirements.txt     # Danh sách thư viện Python cho Backend (FastAPI, YAMNet,...)
+├── backend/             # Dịch vụ Backend FastAPI
+│   ├── app.py           # REST API routes & Websocket stream
+│   ├── audio_engine.py   # Mô hình xử lý Google YAMNet AI
+│   └── package.json     # Node wrapper khởi chạy Python server
+├── frontend/            # Giao diện React + Vite Dashboard
+│   ├── src/             # Mã nguồn React (App.jsx, index.css)
+│   └── package.json     # Thư viện Frontend React Vite
+└── yamnet_audio_classification/  # Dữ liệu mô hình YAMNet
+```

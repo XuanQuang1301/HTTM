@@ -12,3 +12,4 @@ Thumbs.db
 *.tflite
 *.pt
 *.log
+node_modules

@@ -1,0 +1,21 @@
+{
+  "name": "ai-security-system-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@10.9.3",
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:all": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,yellow.bold\" -n \"BACKEND,FRONTEND\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "build": "turbo build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "turbo": "^2.4.4"
+  }
+}
