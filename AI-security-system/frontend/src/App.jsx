@@ -1,22 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  ShieldAlert, 
-  Volume2, 
-  VolumeX, 
-  FileAudio, 
-  Play, 
-  AlertTriangle, 
-  Activity, 
-  Clock, 
-  Upload, 
-  Flame, 
-  Baby, 
-  Square,
-  RefreshCw,
-  Mic,
-  MicOff,
-  Radio
-} from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
@@ -370,26 +352,21 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
 
       {/* HEADER BAR */}
       <header className="clean-card" style={{ padding: '16px 20px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <ShieldAlert size={26} color="#2563eb" />
-          <div>
-            <h1 style={{ fontSize: '18px', fontWeight: '700', color: '#0f172a' }}>AI Security System Dashboard</h1>
-            <p style={{ fontSize: '12px', color: '#64748b' }}>Phân loại âm thanh bằng Google YAMNet AI</p>
-          </div>
+        <div>
+          <h1 style={{ fontSize: '18px', fontWeight: '700', color: '#0f172a' }}>AI Security System Dashboard</h1>
+          <p style={{ fontSize: '12px', color: '#64748b' }}>Phân loại âm thanh bằng Google YAMNet AI</p>
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           {/* STOP ALERT BUTTON IN HEADER */}
           {isDanger && (
-            <button onClick={handleStopAlert} className="btn-stop-alert" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Square size={14} fill="#ffffff" />
+            <button onClick={handleStopAlert} className="btn-stop-alert">
               <span>Dừng Cảnh Báo</span>
             </button>
           )}
 
           {/* Mute/Unmute Audio */}
           <button onClick={() => setAlarmMuted(!alarmMuted)} className="btn-compact btn-outline">
-            {alarmMuted ? <VolumeX size={15} color="#dc2626" /> : <Volume2 size={15} color="#2563eb" />}
             <span>{alarmMuted ? 'Còi: Tắt' : 'Còi: Bật'}</span>
           </button>
 
@@ -404,16 +381,13 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
       {/* ALERT BANNER (If Danger Detected) */}
       {isDanger && (
         <div className="alert-banner-light" style={{ padding: '14px 20px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <AlertTriangle size={24} color="#dc2626" />
-            <div>
-              <span style={{ fontWeight: '700', color: '#dc2626', fontSize: '15px' }}>
-                [CẢNH BÁO] NGUY HIỂM: {dangerEvent} ({dangerConfidence}%)
-              </span>
-              <p style={{ fontSize: '12px', color: '#7f1d1d', marginTop: '1px' }}>
-                Phát hiện âm thanh bất thường vượt quá ngưỡng an toàn.
-              </p>
-            </div>
+          <div>
+            <span style={{ fontWeight: '700', color: '#dc2626', fontSize: '15px' }}>
+              [CẢNH BÁO] NGUY HIỂM: {dangerEvent} ({dangerConfidence}%)
+            </span>
+            <p style={{ fontSize: '12px', color: '#7f1d1d', marginTop: '1px' }}>
+              Phát hiện âm thanh bất thường vượt quá ngưỡng an toàn.
+            </p>
           </div>
 
           {/* Action button inside Banner */}
@@ -431,8 +405,7 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
           
           {/* Card 1: Realtime Microphone Toggle */}
           <div className="clean-card" style={{ padding: '18px', background: isListening ? '#f0fdf4' : '#ffffff', borderColor: isListening ? '#86efac' : '#e2e8f0' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <Radio size={18} color={isListening ? '#16a34a' : '#2563eb'} />
+            <div style={{ marginBottom: '10px' }}>
               <h3 style={{ fontSize: '15px', fontWeight: '600', color: isListening ? '#14532d' : '#0f172a' }}>
                 1. Thu Âm Qua Microphone
               </h3>
@@ -447,23 +420,16 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
               style={{ width: '100%', justifyContent: 'center', padding: '10px' }}
             >
               {isListening ? (
-                <>
-                  <MicOff size={16} />
-                  <span>Tắt Microphone (Đang nghe...)</span>
-                </>
+                <span>Tắt Microphone (Đang nghe...)</span>
               ) : (
-                <>
-                  <Mic size={16} />
-                  <span>Bật Microphone Realtime</span>
-                </>
+                <span>Bật Microphone Realtime</span>
               )}
             </button>
           </div>
 
           {/* Card 2: Compact Test Buttons */}
           <div className="clean-card" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-              <FileAudio size={18} color="#2563eb" />
+            <div style={{ marginBottom: '12px' }}>
               <h3 style={{ fontSize: '15px', fontWeight: '600' }}>2. Test Với File MP3 Có Sẵn</h3>
             </div>
 
@@ -474,11 +440,7 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
                 className="btn-compact btn-danger"
                 style={{ justifyContent: 'space-between' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Flame size={15} />
-                  <span>File 1: Tiếng Nổ (Explosion)</span>
-                </div>
-                <Play size={14} />
+                <span>File 1: Tiếng Nổ (Explosion)</span>
               </button>
 
               <button 
@@ -487,23 +449,17 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
                 className="btn-compact btn-primary"
                 style={{ justifyContent: 'space-between' }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <Baby size={15} />
-                  <span>File 2: Tiếng Khóc (Crying)</span>
-                </div>
-                <Play size={14} />
+                <span>File 2: Tiếng Khóc (Crying)</span>
               </button>
             </div>
           </div>
 
           {/* Card 3: Custom File Upload */}
           <div className="clean-card" style={{ padding: '18px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <Upload size={18} color="#2563eb" />
+            <div style={{ marginBottom: '10px' }}>
               <h3 style={{ fontSize: '15px', fontWeight: '600' }}>3. Upload File Âm Thanh</h3>
             </div>
             <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', border: '1px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', background: '#f8fafc', fontSize: '13px', color: '#475569' }}>
-              <Upload size={16} />
               <span>Chọn file audio từ máy...</span>
               <input type="file" accept="audio/*" onChange={handleFileUpload} style={{ display: 'none' }} />
             </label>
@@ -516,13 +472,11 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
           
           <div className="clean-card" style={{ padding: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Activity size={18} color="#2563eb" />
+              <div>
                 <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Top 5 Dự Đoán AI (YAMNet)</h3>
               </div>
               {(loading || isListening) && (
-                <span style={{ fontSize: '12px', color: isListening ? '#16a34a' : '#2563eb', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <RefreshCw size={12} className="spin" style={{ animation: 'spin 1s linear infinite' }} /> 
+                <span style={{ fontSize: '12px', color: isListening ? '#16a34a' : '#2563eb' }}>
                   {isListening ? 'Đang nghe Mic...' : 'Đang xử lý...'}
                 </span>
               )}
@@ -557,7 +511,7 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
             <div style={{ marginTop: '20px', paddingTop: '14px', borderTop: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '12px', color: '#64748b' }}>
               <span>Trạng thái phân tích:</span>
               <span style={{ fontWeight: '600', color: isDanger ? '#dc2626' : '#16a34a' }}>
-                {isDanger ? `⚠️ Nguy hiểm (${dangerEvent})` : '✅ An toàn'}
+                {isDanger ? `Nguy hiểm (${dangerEvent})` : 'An toàn'}
               </span>
             </div>
           </div>
@@ -569,8 +523,7 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
           
           <div className="clean-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column', height: '100%', minHeight: '450px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Clock size={18} color="#2563eb" />
+              <div>
                 <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Nhật Ký Sự Kiện & Phản Hồi</h3>
               </div>
               <button onClick={handleClearLogs} style={{ background: 'none', border: 'none', color: '#94a3b8', fontSize: '12px', cursor: 'pointer', textDecoration: 'underline' }}>
@@ -597,7 +550,7 @@ function resampleBuffer(inputData, inputSampleRate, targetSampleRate = 16000) {
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontWeight: '600', color: log.type === 'danger' ? '#b91c1c' : log.type === 'safe' ? '#15803d' : '#1e40af' }}>
-                      {log.type === 'danger' ? '🚨 CẢNH BÁO' : log.type === 'safe' ? '🛡️ THÔNG TIN' : 'ℹ️ THÔNG BÁO'}
+                      {log.type === 'danger' ? 'CẢNH BÁO' : log.type === 'safe' ? 'THÔNG TIN' : 'THÔNG BÁO'}
                     </span>
                     <span className="font-mono" style={{ color: '#94a3b8', fontSize: '11px' }}>{log.time}</span>
                   </div>
