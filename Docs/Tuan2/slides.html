@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Báo Cáo Tiến Độ Tuần 2 - Hệ Thống Phát Hiện & Cảnh Báo Âm Thanh Nguy Hiểm</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==================== DESIGN SYSTEM & TOKENS (LIGHT MINIMAL THEME) ==================== */
+        :root {
+            --bg-body: #f8fafc;
+            --bg-slide: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-subtle: #f8fafc;
+            --border-card: #e2e8f0;
+            --border-hover: #cbd5e1;
+            
+            --primary: #1e3a8a;          /* Corporate Navy */
+            --primary-accent: #2563eb;   /* Classic Academic Blue */
+            --secondary: #475569;        /* Slate Gray */
+            
+            --danger: #dc2626;           /* Red */
+            --warning: #d97706;          /* Amber */
+            --success: #16a34a;          /* Green */
+            --info: #2563eb;             /* Royal Blue */
+            
+            --text-main: #0f172a;        /* High Contrast Slate */
+            --text-sub: #334155;         /* Dark Gray */
+            --text-muted: #64748b;       /* Medium Gray */
+            
+            --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            --transition-smooth: all 0.2s ease-in-out;
+            --shadow-subtle: 0 2px 8px rgba(15, 23, 42, 0.04);
+            --shadow-hover: 0 6px 16px rgba(15, 23, 42, 0.06);
+        }
+
+        /* ==================== BASE STYLES ==================== */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ==================== LAYOUT & CONTAINER ==================== */
+        .presentation-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            background: var(--bg-body);
+        }
+
+        /* Header Bar */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 2.5rem;
+            background: #ffffff;
+            border-bottom: 1px solid var(--border-card);
+            z-index: 10;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-main);
+        }
+
+        .brand-badge {
+            background: var(--primary);
+            color: #ffffff;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+        }
+
+        .header-section-title {
+            font-size: 0.82rem;
+            color: var(--primary);
+            font-weight: 700;
+            background: #eff6ff;
+            padding: 0.3rem 0.85rem;
+            border-radius: 20px;
+            border: 1px solid #dbeafe;
+        }
+
+        .progress-bar-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #e2e8f0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: var(--primary-accent);
+            transition: width 0.3s ease;
+        }
+
+        /* Slide Viewport */
+        .slides-viewport {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.25rem 2rem;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 2rem 3.5rem;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(20px);
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow-y: auto;
+            background: var(--bg-slide);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        .slide.prev-slide {
+            transform: translateX(-20px);
+        }
+
+        /* Slide Typography */
+        .slide-title-container {
+            margin-bottom: 1.25rem;
+            border-bottom: 2px solid var(--bg-card-subtle);
+            padding-bottom: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .slide-subtitle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.82rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            padding: 0.2rem 0.65rem;
+            border-radius: 4px;
+            margin-bottom: 0.35rem;
+        }
+
+        .slide-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text-main);
+            line-height: 1.2;
+        }
+
+        /* Footer Controls */
+        .bottom-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 2.5rem;
+            background: #ffffff;
+            border-top: 1px solid var(--border-card);
+            z-index: 10;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn-nav {
+            background: #ffffff;
+            border: 1px solid var(--border-card);
+            color: var(--text-main);
+            padding: 0.35rem 0.75rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .btn-nav:hover:not(:disabled) {
+            background: #f1f5f9;
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-nav:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-sub);
+            padding: 0 0.4rem;
+        }
+
+        .kbd-hints {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        kbd {
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            padding: 0.1rem 0.35rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        /* ==================== CLEAN CARDS & GRIDS ==================== */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            flex: 1;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            flex: 1;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.1rem;
+            flex: 1;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+            padding: 1.4rem 1.6rem;
+            box-shadow: var(--shadow-subtle);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.85rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid var(--bg-card-subtle);
+        }
+
+        .card-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            font-size: 1rem;
+            color: #1e293b;
+            line-height: 1.65;
+            flex: 1;
+        }
+
+        .card-body ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card-body li {
+            position: relative;
+            padding-left: 1.35rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .card-body li::before {
+            content: "•";
+            position: absolute;
+            left: 0.25rem;
+            color: var(--primary-accent);
+            font-weight: bold;
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
+        /* Stat Chip / Stat Card */
+        .stat-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 1rem 1.2rem;
+            text-align: center;
+        }
+
+        .stat-val {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary-accent);
+        }
+
+        .stat-lbl {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            margin-top: 0.25rem;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+            white-space: nowrap;
+        }
+
+        .badge-danger { background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+        .badge-warning { background: #fffbeb; color: var(--warning); border: 1px solid #fde68a; }
+        .badge-success { background: #f0fdf4; color: var(--success); border: 1px solid #bbf7d0; }
+        .badge-info { background: #eff6ff; color: var(--info); border: 1px solid #bfdbfe; }
+        .badge-secondary { background: #f1f5f9; color: var(--secondary); border: 1px solid #cbd5e1; }
+
+        /* Tables - Trimming text for maximum clarity */
+        .styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-card);
+            box-shadow: var(--shadow-subtle);
+        }
+
+        .styled-table th {
+            background: #f8fafc;
+            color: var(--primary);
+            font-weight: 700;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid var(--border-card);
+            text-transform: uppercase;
+            font-size: 0.78rem;
+            letter-spacing: 0.04em;
+        }
+
+        .styled-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-card);
+            color: var(--text-sub);
+            vertical-align: middle;
+            line-height: 1.5;
+        }
+
+        .styled-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .styled-table tr:hover td {
+            background: #f8fafc;
+        }
+
+        /* Large Table for Slide 5 */
+        .styled-table.large-table th {
+            padding: 0.85rem 1.1rem;
+            font-size: 0.82rem;
+        }
+
+        .styled-table.large-table td {
+            padding: 0.85rem 1.1rem;
+            font-size: 0.98rem;
+            line-height: 1.55;
+        }
+
+        .styled-table.large-table code {
+            font-size: 0.85rem !important;
+        }
+
+        .styled-table.large-table .badge {
+            font-size: 0.82rem !important;
+            padding: 0.3rem 0.7rem !important;
+        }
+
+        /* Flow Pipeline Boxes */
+        .flow-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.85rem;
+            margin: 1.2rem 0 1.6rem 0;
+            padding: 1.1rem;
+            background: #f8fafc;
+            border: 1px solid var(--border-card);
+            border-radius: 12px;
+        }
+
+        .flow-step {
+            flex: 1;
+            background: #ffffff;
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 1.1rem 0.85rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+
+        .flow-step-num {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--primary-accent);
+            margin-bottom: 0.3rem;
+        }
+
+        .flow-step-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text-main);
+            margin-bottom: 0.35rem;
+        }
+
+        .flow-step-desc {
+            font-size: 0.88rem;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        .flow-arrow {
+            font-size: 1.3rem;
+            color: var(--primary-accent);
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* Cover Slide */
+        .cover-slide {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+            padding: 2.5rem;
+        }
+
+        .cover-badge {
+            background: var(--primary);
+            color: #ffffff;
+            padding: 0.35rem 1rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+        }
+
+        .cover-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.2;
+            max-width: 850px;
+            margin-bottom: 0.85rem;
+            letter-spacing: -0.02em;
+        }
+
+        .cover-subtitle {
+            font-size: 1.15rem;
+            color: var(--secondary);
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+
+        .students-card {
+            background: #ffffff;
+            border: 1px solid var(--border-card);
+            border-radius: 10px;
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow-hover);
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .student-item {
+            text-align: left;
+        }
+
+        .student-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
+        }
+
+        .student-id {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* Overview Modal Grid */
+        .overview-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            padding: 2.5rem;
+            opacity: 0;
+            pointer-events: none;
+            transition: var(--transition-smooth);
+        }
+
+        .overview-modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .overview-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #ffffff;
+            margin-bottom: 1.25rem;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.85rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .thumb-card {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 110px;
+        }
+
+        .thumb-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-accent);
+        }
+
+        .thumb-card.current {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.3);
+        }
+
+        .thumb-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .thumb-title {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin: 0.4rem 0;
+            line-height: 1.3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-brand">
+                <span class="brand-badge">PTIT</span>
+                <span>HỆ THỐNG THÔNG MINH - TUẦN 2</span>
+            </div>
+            <div class="header-section-title" id="section-indicator">Tổng quan Hệ thống</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+        </header>
+
+        <!-- Slides Viewport -->
+        <main class="slides-viewport" id="slides-viewport">
+
+            <!-- ==================== SLIDE 1: COVER ==================== -->
+            <section class="slide cover-slide active" data-section="Trang Chủ">
+                <div class="cover-badge">BÁO CÁO TIẾN ĐỘ TUẦN 2</div>
+                <h1 class="cover-title">PHÁT HIỆN VÀ CẢNH BÁO ÂM THANH NGUY HIỂM THỜI GIAN THỰC</h1>
+                <p class="cover-subtitle">Giải pháp an ninh thông minh tích hợp AI YAMNet & Cảnh báo khẩn cấp</p>
+                
+                <div class="students-card">
+                    <div class="student-item">
+                        <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Sinh viên thực hiện</div>
+                        <div class="student-name">Lê Thanh Thủy</div>
+                        <div class="student-id">Mã SV: B23DCCN809</div>
+                    </div>
+                    <div style="width: 1px; background: var(--border-card);"></div>
+                    <div class="student-item">
+                        <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase;">Sinh viên thực hiện</div>
+                        <div class="student-name">Đặng Xuân Quang</div>
+                        <div class="student-id">Mã SV: B23DCCN686</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 2: TỔNG QUAN HỆ THỐNG ==================== -->
+            <section class="slide" data-section="I. Tổng Quan Kiến Trúc">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN I</span>
+                    <h2 class="slide-title">TỔNG QUAN KIẾN TRÚC 4 KHỐI CHỨC NĂNG</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Khối 1: Thu Nhận & Preprocessing</div>
+                            <span class="badge badge-info">16 kHz Mono</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Thu PCM từ Microphone qua PyAudio / Web Audio API.</li>
+                                <li>Chuẩn hóa cố định <strong>16.000 Hz Mono</strong>.</li>
+                                <li>Cửa sổ trượt <strong>0.96s - 1.0s</strong> (chồng lấp 50%).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Khối 2: AI Inference Engine</div>
+                            <span class="badge badge-warning">Google YAMNet</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Mô hình Google YAMNet nguyên bản.</li>
+                                <li>Biến đổi Fourier STFT → Phổ <strong>Log-Mel Spectrogram (96, 64)</strong>.</li>
+                                <li>Ánh xạ logic từ khóa nhận diện <strong>6 nhóm mục tiêu</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Khối 3: Logic Chống Báo Động Giả</div>
+                            <span class="badge badge-danger">Temporal Filter</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Lọc ngưỡng tin cậy động <strong>Score ≥ 0.30</strong>.</li>
+                                <li>Biểu quyết cửa sổ trượt <strong>Sliding Window (k=3, count≥2)</strong>.</li>
+                                <li>Khóa cờ chống spam Email & Thời gian hồi <strong>10s</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Khối 4: Action, Alert & GUI</div>
+                            <span class="badge badge-success">Real-time Response</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Phát còi hú cảnh báo tại chỗ qua <strong>pygame.mixer</strong>.</li>
+                                <li>Gửi Email cảnh báo SOS khẩn cấp qua <strong>SMTP SSL</strong>.</li>
+                                <li>Mô phỏng ngắt mạch điện phần ứng (Relay GPIO / PC).</li>
+                                <li>Trực quan hóa thời gian thực trên <strong>FastAPI + React</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 3: KIẾN TRÚC MÔ HÌNH YAMNET ==================== -->
+            <section class="slide" data-section="II. Mô Hình Google YAMNet">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN II</span>
+                    <h2 class="slide-title">KIẾN TRÚC MÔ HÌNH GOOGLE YAMNET</h2>
+                </div>
+                
+                <div class="grid-4" style="margin-bottom: 1.25rem;">
+                    <div class="stat-box">
+                        <div class="stat-val">MobileNet</div>
+                        <div class="stat-lbl">Depthwise Convolutions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">(96, 64)</div>
+                        <div class="stat-lbl">Log-Mel Spectrogram</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">521 Classes</div>
+                        <div class="stat-lbl">AudioSet Ontology</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">1024-dim</div>
+                        <div class="stat-lbl">Audio Embeddings</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Đóng Gói Offline SavedModel</div>
+                            <span class="badge badge-info">Local Deployment</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Lưu trữ cục bộ tại thư mục <code>yamnet_model</code>.</li>
+                                <li>Hoạt động độc lập không phụ thuộc kết nối Internet.</li>
+                                <li>Dung lượng nhẹ, phù hợp cho CPU và vi máy tính.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Độ Trễ Suy Luận (Inference Time)</div>
+                            <span class="badge badge-success">15ms - 30ms</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Đạt tốc độ suy luận từ <strong>15ms - 30ms trên CPU thường</strong>.</li>
+                                <li>Đảm bảo tính phản ứng tức thời theo thời gian thực.</li>
+                                <li>Không yêu cầu phần cứng GPU đắt tiền.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 4: DATASET & NGUỒN DỮ LIỆU ==================== -->
+            <section class="slide" data-section="III. Datasets Khảo Sát">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN III</span>
+                    <h2 class="slide-title">TẬP DỮ LIỆU & MẪU THỬ NGHIỆM</h2>
+                </div>
+                
+                <div class="grid-3" style="margin-bottom: 1.25rem;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Google AudioSet</div>
+                            <span class="badge badge-secondary">2M+ Clips</span>
+                        </div>
+                        <div class="card-body">
+                            <p>Tập dữ liệu gốc của YAMNet gồm 2 triệu trích đoạn YouTube, bao phủ 521 nhãn sự kiện âm thanh môi trường và khẩn cấp.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">ESC-50 Dataset</div>
+                            <span class="badge badge-info">2,000 Clips</span>
+                        </div>
+                        <div class="card-body">
+                            <p>50 lớp âm thanh môi trường chuẩn hóa: Tiếng kêu cứu, tiếng kính vỡ và tạp âm tự nhiên (mưa, gió, tiếng bước chân).</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">UrbanSound8K</div>
+                            <span class="badge badge-warning">8,732 Clips</span>
+                        </div>
+                        <div class="card-body">
+                            <p>10 lớp âm thanh đô thị: Tiếng súng nổ (gunshot), còi báo động (siren) và ồn sinh hoạt giao thông.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Mẫu Âm Thanh Kiểm Thử Trực Tiếp</div>
+                        <span class="badge badge-danger">Real Audio Samples</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
+                                <div style="font-weight: 700; color: var(--danger); font-size: 0.95rem;">Explosion Audio</div>
+                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">dragon-studio-nuclear-explosion.mp3</div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
+                                <div style="font-weight: 700; color: var(--warning); font-size: 0.95rem;">Scream / Cry Audio</div>
+                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">pataponai-hatapon-crying.mp3</div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
+                                <div style="font-weight: 700; color: var(--info); font-size: 0.95rem;">Alarm & Live Mic</div>
+                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">assets/alarm.WAV & PyAudio Stream</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 5: DANH MỤC 6 NHÓM ÂM THANH MỤC TIÊU ==================== -->
+            <section class="slide" data-section="IV. 6 Nhóm Âm Thanh Mục Tiêu">
+                <div class="slide-title-container" style="margin-bottom: 1.25rem;">
+                    <span class="slide-subtitle">PHẦN IV</span>
+                    <h2 class="slide-title">DANH MỤC 6 NHÓM ÂM THANH MỤC TIÊU & ÁNH XẠ LOGIC</h2>
+                </div>
+                <table class="styled-table large-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px; text-align: center;">STT</th>
+                            <th style="width: 200px;">Nhóm Mục Tiêu</th>
+                            <th style="width: 240px;">Từ Khóa AudioSet</th>
+                            <th>Tình Huống Thực Tế</th>
+                            <th style="width: 130px;">Mức Độ</th>
+                            <th style="width: 250px;">Phản Ứng Tự Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center; font-weight: 700;">01</td>
+                            <td style="font-weight: 700; color: var(--primary);">Scream / Cry for help</td>
+                            <td><code style="color: #be185d;">Scream, Yell, Crying, Wail</code></td>
+                            <td>La hét, kêu cứu, bạo lực gia đình</td>
+                            <td><span class="badge badge-danger">Khẩn cấp</span></td>
+                            <td>• Email SOS<br>• Phát còi hú tại chỗ</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-weight: 700;">02</td>
+                            <td style="font-weight: 700; color: var(--primary);">Explosion / Gunshot</td>
+                            <td><code style="color: #be185d;">Explosion, Boom, Gunshot</code></td>
+                            <td>Cháy nổ bình gas, chập điện, súng đạn</td>
+                            <td><span class="badge badge-danger" style="background: #991b1b; color: #fff;">Tối khẩn</span></td>
+                            <td>• Email cảnh báo nổ<br>• Còi hú • Ngắt Relay</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-weight: 700;">03</td>
+                            <td style="font-weight: 700; color: var(--primary);">Glass Breaking</td>
+                            <td><code style="color: #be185d;">Glass, Shatter, Breaking</code></td>
+                            <td>Đập phá, vỡ kính đột nhập</td>
+                            <td><span class="badge badge-warning">Cảnh báo cao</span></td>
+                            <td>• Email báo đột nhập<br>• Ghi nhật ký sự cố</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-weight: 700;">04</td>
+                            <td style="font-weight: 700; color: var(--primary);">Fire Alarm / Siren</td>
+                            <td><code style="color: #be185d;">Siren, Fire alarm, Buzzer</code></td>
+                            <td>Còi báo cháy, chuông sự cố kỹ thuật</td>
+                            <td><span class="badge badge-danger">Khẩn cấp</span></td>
+                            <td>• Email báo cháy<br>• Bật Alert khẩn cấp</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-weight: 700;">05</td>
+                            <td style="font-weight: 700; color: var(--primary);">Impact / Crash</td>
+                            <td><code style="color: #be185d;">Crash, Smash, Car crash</code></td>
+                            <td>Va quẹt xe, ngã đổ, chấn động</td>
+                            <td><span class="badge badge-info">Cảnh báo</span></td>
+                            <td>• Ghi Log sự kiện<br>• Thông báo trên GUI</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; font-weight: 700;">06</td>
+                            <td style="font-weight: 700; color: var(--primary);">Normal Background</td>
+                            <td><code style="color: #be185d;">Speech, Music, Rain, Wind</code></td>
+                            <td>Nói chuyện, sinh hoạt, mưa rơi, ồn</td>
+                            <td><span class="badge badge-success">Bình thường</span></td>
+                            <td>• Giữ trạng thái an toàn<br>• Bỏ qua (Không báo)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- ==================== SLIDE 6: GIẢI THUẬT QUYẾT ĐỊNH & CHỐNG BÁO GIẢ ==================== -->
+            <section class="slide" data-section="V. Giải Thuật Chống Báo Giả">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN V</span>
+                    <h2 class="slide-title">GIẢI THUẬT QUYẾT ĐỊNH & CHỐNG BÁO ĐỘNG GIẢ</h2>
+                </div>
+
+                <div class="flow-container">
+                    <div class="flow-step">
+                        <div class="flow-step-num">BƯỚC 1</div>
+                        <div class="flow-step-title">Ngưỡng Tin Cậy</div>
+                        <div class="flow-step-desc">Score ≥ 0.30 (30%)</div>
+                    </div>
+                    <div class="flow-arrow">➔</div>
+                    <div class="flow-step">
+                        <div class="flow-step-num">BƯỚC 2</div>
+                        <div class="flow-step-title">Majority Voting</div>
+                        <div class="flow-step-desc">Sliding Window k=3, Count ≥ 2</div>
+                    </div>
+                    <div class="flow-arrow">➔</div>
+                    <div class="flow-step">
+                        <div class="flow-step-num">BƯỚC 3</div>
+                        <div class="flow-step-title">Anti-Spam Email</div>
+                        <div class="flow-step-desc">email_sent_flags</div>
+                    </div>
+                    <div class="flow-arrow">➔</div>
+                    <div class="flow-step">
+                        <div class="flow-step-num">BƯỚC 4</div>
+                        <div class="flow-step-title">Cooldown 10s</div>
+                        <div class="flow-step-desc">Khóa thời gian hồi</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Lọc Ngưỡng & Chuỗi Thời Gian</div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Ngưỡng động (Step 1):</strong> Chỉ chuyển tiếp sự cố có xác suất dự đoán <strong>≥ 30%</strong>.</li>
+                                <li><strong>Biểu quyết chuỗi (Step 2):</strong> Yêu cầu xuất hiện tối thiểu 2/3 khung hình liên tiếp. Triệt tiêu 100% tiếng động ngẫu nhiên ngắn hạn.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Cơ Chế Khóa Cờ & Cooldown</div>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Khóa Cờ Email (Step 3):</strong> Cờ <code>email_sent_flags</code> khóa kênh gửi thư sau lần cảnh báo đầu tiên đến khi về lại Normal.</li>
+                                <li><strong>Thời gian hồi (Step 4):</strong> Giữ khoảng nghỉ 10 giây giữa các lần hú còi tránh hoảng loạn và nghẽn mạng.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 7: KIẾN TRÚC PHẦN MỀM (FRONTEND & BACKEND) ==================== -->
+            <section class="slide" data-section="VI. Software Architecture">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN VI</span>
+                    <h2 class="slide-title">KIẾN TRÚC PHẦN MỀM & MONITORING DASHBOARD</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Frontend Dashboard (React + Vite)</div>
+                            <span class="badge badge-info">Real-time GUI</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Trạng thái An ninh:</strong> Badge màu trực quan (Normal, Warning, Critical).</li>
+                                <li><strong>Top 5 Probabilities Chart:</strong> Biểu đồ thanh ngang cập nhật liên tục qua <strong>WebSocket</strong>.</li>
+                                <li><strong>Incident Logs & Manual Siren:</strong> Nhật ký lưu trữ sự cố & Nút bật còi hú thủ công.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Backend Service (FastAPI)</div>
+                            <span class="badge badge-warning">Lat &lt; 100ms</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Audio Stream Ingestion:</strong> Tiếp nhận luồng âm thanh PCM từ Client với độ trễ <strong>&lt; 100ms</strong>.</li>
+                                <li><strong>Pipeline Điều Phối:</strong> Đọc PCM → YAMNet Inference → Filter Logic → Broadcast & Trigger Actions.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 8: CẢNH BÁO & MÔ PHỎNG PHẦN CỨNG ==================== -->
+            <section class="slide" data-section="VI. Action & Hardware Relay">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN VI (TIẾP)</span>
+                    <h2 class="slide-title">PHẢN ỨNG CẢNH BÁO & MÔ PHỎNG PHẦN CỨNG</h2>
+                </div>
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Email SMTP SSL</div>
+                            <span class="badge badge-danger">Gmail 465</span>
+                        </div>
+                        <div class="card-body">
+                            <p>Kết nối <code>smtp.gmail.com:465</code> gửi Email khẩn cấp tức thời kèm timestamp, loại sự cố và mức độ tin cậy.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Còi Hú Tại Chỗ</div>
+                            <span class="badge badge-warning">Pygame Mixer</span>
+                        </div>
+                        <div class="card-body">
+                            <p>Phát âm thanh còi báo động tần số cao qua <code>pygame.mixer</code> khi kích hoạt các nhóm sự cố 01, 02, 03, 04.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Mô Phỏng Relay</div>
+                            <span class="badge badge-info">RPi.GPIO / PC</span>
+                        </div>
+                        <div class="card-body">
+                            <p>Mô phỏng ngắt mạch điện qua <code>RPi.GPIO</code> (chân <code>LED_PIN=18</code>). Tự động dùng PC Fallback nếu không có bo mạch.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top: 1.25rem; background: #eff6ff; border-color: #bfdbfe;">
+                    <div class="card-header">
+                        <div class="card-title" style="color: var(--primary);">Kịch Bản Phản Ứng Tự Động Cháy Nổ / Súng Nổ (Critical)</div>
+                    </div>
+                    <div class="card-body">
+                        <p style="color: var(--text-sub);">
+                            Phát hiện <strong>Explosion / Gunshot</strong> → Kích hoạt đồng thời 3 hành động: 
+                            <strong>(1) Gửi Email khẩn</strong> → <strong>(2) Bật còi hú liên tục</strong> → <strong>(3) Kích ngắt nguồn điện (Relay GPIO 18)</strong>.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 9: ĐÁNH GIÁ THỰC TẾ CÁC NHÃN NHẬN BIẾT ==================== -->
+            <section class="slide" data-section="VII. Đánh Giá Thực Tế">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN VII</span>
+                    <h2 class="slide-title">ĐÁNH GIÁ THỰC TẾ KHẢ NĂNG NHẬN DIỆN NHÃN ÂM THANH</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card" style="border-top: 4px solid var(--danger);">
+                        <div class="card-header">
+                            <div class="card-title" style="color: var(--danger);">5 Nhóm Nhãn Nguy Hiểm (Danger Targets)</div>
+                            <span class="badge badge-danger">Alert Triggered</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><code>crying, sobbing</code>: Tiếng khóc, nức nở, kêu cứu khẩn cấp.</li>
+                                <li><code>screaming</code>: Tiếng la hét, hoảng loạn khi gặp sự cố.</li>
+                                <li><code>shout</code>: Tiếng quát tháo, xô xát, gây hấn.</li>
+                                <li><code>gunshot</code>: Tiếng súng nổ, nổ vũ khí nguy hiểm.</li>
+                                <li><code>explosion</code>: Tiếng nổ lớn, nổ bình gas, chập điện.</li>
+                            </ul>
+                            <div style="margin-top: 0.75rem; padding: 0.6rem 0.85rem; background: #fef2f2; border-radius: 6px; font-size: 0.88rem; color: var(--danger); font-weight: 600;">
+                                ➔ Đạt ngưỡng Score ≥ 0.30 → Kích hoạt Còi hú, Email SOS & Ngắt Relay.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 4px solid var(--info);">
+                        <div class="card-header">
+                            <div class="card-title" style="color: var(--info);">Nhãn Âm Thanh Môi Trường & Sinh Hoạt</div>
+                            <span class="badge badge-info">Background / Normal</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><code>Speech / Conversation</code>: Tiếng giao tiếp, nói chuyện thường ngày.</li>
+                                <li><code>Silence / Ambient</code>: Môi trường yên tĩnh, không có tiếng động lớn.</li>
+                                <li><code>Rain / Wind noise</code>: Tiếng mưa rơi, gió thổi tự nhiên.</li>
+                                <li><code>Footsteps / Typing</code>: Tiếng bước chân, gõ bàn phím văn phòng.</li>
+                                <li><code>Traffic / Dog bark</code>: Tiếng xe cộ giao thông, tiếng chó sủi.</li>
+                            </ul>
+                            <div style="margin-top: 0.75rem; padding: 0.6rem 0.85rem; background: #eff6ff; border-radius: 6px; font-size: 0.88rem; color: var(--primary); font-weight: 600;">
+                                ➔ Hệ thống tự động bỏ qua, giữ trạng thái An toàn (Normal).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 10: ĐÁNH GIÁ HỆ THỐNG HIỆN TẠI ==================== -->
+            <section class="slide" data-section="VII. Đánh Giá Hệ Thống">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN VII (TIẾP)</span>
+                    <h2 class="slide-title">ĐÁNH GIÁ HỆ THỐNG HIỆN TẠI (ƯU & HẠN CHẾ)</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card" style="border-left: 4px solid var(--success);">
+                        <div class="card-header">
+                            <div class="card-title" style="color: var(--success);">Ưu Điểm Nổi Bật</div>
+                            <span class="badge badge-success">Advantages</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Độ trễ cực thấp:</strong> 15ms - 30ms suy luận trên CPU.</li>
+                                <li><strong>Vận hành Offline:</strong> TensorFlow SavedModel chạy local hoàn toàn.</li>
+                                <li><strong>Độ phủ rộng:</strong> 521 nhãn AudioSet bao quát tốt 6 nhóm mục tiêu, không bị overfitting.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-left: 4px solid var(--danger);">
+                        <div class="card-header">
+                            <div class="card-title" style="color: var(--danger);">Hạn Chế Cần Khắc Phục</div>
+                            <span class="badge badge-danger">Limitations</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Phụ thuộc từ khóa tiếng Anh:</strong> Ánh xạ từ danh mục chuẩn AudioSet quốc tế.</li>
+                                <li><strong>Chưa có ngữ nghĩa tiếng Việt:</strong> Chưa nhận dạng được các câu nói/tiếng kêu cứu bằng tiếng Việt (ví dụ: "Cứu tôi với").</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 11: KẾ HOẠCH MỞ RỘNG (ROADMAP) ==================== -->
+            <section class="slide" data-section="VII. Kế Hoạch Mở Rộng">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN VII (TIẾP)</span>
+                    <h2 class="slide-title">KẾ HOẠCH PHÁT TRIỂN GIAI ĐOẠN TIẾP THEO</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card" style="border-top: 4px solid var(--primary-accent);">
+                        <div class="card-header">
+                            <div class="card-title">Giai Đoạn 2: Custom Transfer Learning</div>
+                            <span class="badge badge-info">Model Refinement</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Tận dụng <strong>Vector nhúng 1024 chiều</strong> từ YAMNet.</li>
+                                <li>Huấn luyện thêm mạng nơ-ron phân loại (<strong>Dense + Dropout</strong>) chuyên biệt cho 6 nhóm mục tiêu.</li>
+                                <li>Tập dữ liệu kết hợp từ ESC-50, UrbanSound8K và âm thanh sự cố thực tế.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card" style="border-top: 4px solid var(--success);">
+                        <div class="card-header">
+                            <div class="card-title">Giai Đoạn 3: Triển Khai Biên & Phần Cứng</div>
+                            <span class="badge badge-success">Edge & Hardware</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Lượng tử hóa mô hình sang <strong>TFLite INT8</strong> để nhúng lên Raspberry Pi 4/5.</li>
+                                <li>Đấu nối chân GPIO trực tiếp vào <strong>Module Relay thực tế</strong> để đóng ngắt tải điện 220V khi có cháy nổ.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 12: TỔNG KẾT & Q&A ==================== -->
+            <section class="slide cover-slide" data-section="Tổng Kết">
+                <div class="cover-badge" style="background: var(--success);">HOÀN THÀNH BÁO CÁO TUẦN 2</div>
+                <h2 class="cover-title" style="font-size: 2.1rem;">CẢM ƠN THẦY CÔ VÀ CÁC BẠN ĐÃ LẮNG NGHE!</h2>
+                <p class="cover-subtitle" style="margin-bottom: 1.75rem;">Hệ Thống Thông Minh Phát Hiện & Cảnh Báo Âm Thanh Nguy Hiểm</p>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <span class="badge badge-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.82rem;">Lê Thanh Thủy - B23DCCN809</span>
+                    <span class="badge badge-secondary" style="padding: 0.4rem 0.9rem; font-size: 0.82rem;">Đặng Xuân Quang - B23DCCN686</span>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Bottom Footer Controls -->
+        <footer class="bottom-footer">
+            <div class="nav-controls">
+                <button class="btn-nav" id="btn-prev" onclick="prevSlide()">❮ Trước</button>
+                <span class="slide-counter" id="slide-counter">01 / 12</span>
+                <button class="btn-nav" id="btn-next" onclick="nextSlide()">Tiếp ❯</button>
+            </div>
+
+            <div class="kbd-hints">
+                <span>Phím <kbd>←</kbd> <kbd>→</kbd> / <kbd>Space</kbd> đổi slide</span>
+                <span style="margin: 0 0.4rem;">•</span>
+                <span>Phím <kbd>O</kbd>: Tổng quan</span>
+                <span style="margin: 0 0.4rem;">•</span>
+                <span>Phím <kbd>F</kbd>: Fullscreen</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Overview Modal -->
+    <div class="overview-modal" id="overview-modal">
+        <div class="overview-header">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">DANH SÁCH SLIDE TUẦN 2</h3>
+            <button class="btn-nav" onclick="closeOverview()" style="background: #ffffff; color: var(--text-main);">Đóng (ESC)</button>
+        </div>
+        <div class="overview-grid" id="overview-grid"></div>
+    </div>
+
+    <!-- JavaScript Controls -->
+    <script>
+        let currentSlideIndex = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        const slideCounter = document.getElementById('slide-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const sectionIndicator = document.getElementById('section-indicator');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const overviewModal = document.getElementById('overview-modal');
+        const overviewGrid = document.getElementById('overview-grid');
+
+        function initPresentation() {
+            updateSlideView();
+            buildOverviewGrid();
+        }
+
+        function updateSlideView() {
+            slides.forEach((slide, idx) => {
+                slide.classList.remove('active', 'prev-slide');
+                if (idx === currentSlideIndex) {
+                    slide.classList.add('active');
+                } else if (idx < currentSlideIndex) {
+                    slide.classList.add('prev-slide');
+                }
+            });
+
+            const activeSlide = slides[currentSlideIndex];
+            const sectionName = activeSlide.getAttribute('data-section') || 'Báo Cáo Tiến Độ';
+            sectionIndicator.innerText = sectionName;
+
+            slideCounter.innerText = `${String(currentSlideIndex + 1).padStart(2, '0')} / ${String(totalSlides).padStart(2, '0')}`;
+            
+            const progressPercent = ((currentSlideIndex + 1) / totalSlides) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            btnPrev.disabled = currentSlideIndex === 0;
+            btnNext.disabled = currentSlideIndex === totalSlides - 1;
+
+            const overviewCards = overviewGrid.querySelectorAll('.thumb-card');
+            overviewCards.forEach((card, idx) => {
+                if (idx === currentSlideIndex) {
+                    card.classList.add('current');
+                } else {
+                    card.classList.remove('current');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlideIndex < totalSlides - 1) {
+                currentSlideIndex++;
+                updateSlideView();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlideIndex > 0) {
+                currentSlideIndex--;
+                updateSlideView();
+            }
+        }
+
+        function goToSlide(index) {
+            if (index >= 0 && index < totalSlides) {
+                currentSlideIndex = index;
+                updateSlideView();
+                closeOverview();
+            }
+        }
+
+        function buildOverviewGrid() {
+            overviewGrid.innerHTML = '';
+            slides.forEach((slide, idx) => {
+                const titleElem = slide.querySelector('.slide-title') || slide.querySelector('.cover-title');
+                const titleText = titleElem ? titleElem.innerText.replace('\n', ' ') : `Slide ${idx + 1}`;
+                
+                const card = document.createElement('div');
+                card.className = `thumb-card ${idx === currentSlideIndex ? 'current' : ''}`;
+                card.onclick = () => goToSlide(idx);
+
+                card.innerHTML = `
+                    <div class="thumb-num">SLIDE ${String(idx + 1).padStart(2, '0')}</div>
+                    <div class="thumb-title">${titleText}</div>
+                    <div style="font-size: 0.72rem; color: var(--text-muted);">${slide.getAttribute('data-section') || ''}</div>
+                `;
+                overviewGrid.appendChild(card);
+            });
+        }
+
+        function toggleOverview() {
+            overviewModal.classList.toggle('active');
+        }
+
+        function closeOverview() {
+            overviewModal.classList.remove('active');
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ' || e.key === 'PageDown') {
+                if (!overviewModal.classList.contains('active')) {
+                    nextSlide();
+                }
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+                if (!overviewModal.classList.contains('active')) {
+                    prevSlide();
+                }
+            } else if (e.key === 'Home') {
+                goToSlide(0);
+            } else if (e.key === 'End') {
+                goToSlide(totalSlides - 1);
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            } else if (e.key === 'o' || e.key === 'O') {
+                toggleOverview();
+            } else if (e.key === 'Escape') {
+                closeOverview();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', initPresentation);
+    </script>
+</body>
+</html>
