@@ -741,130 +741,10 @@
                 </div>
             </section>
 
-            <!-- ==================== SLIDE 3: KIẾN TRÚC MÔ HÌNH YAMNET ==================== -->
-            <section class="slide" data-section="II. Mô Hình Google YAMNet">
-                <div class="slide-title-container">
-                    <span class="slide-subtitle">PHẦN II</span>
-                    <h2 class="slide-title">KIẾN TRÚC MÔ HÌNH GOOGLE YAMNET</h2>
-                </div>
-                
-                <div class="grid-4" style="margin-bottom: 1.25rem;">
-                    <div class="stat-box">
-                        <div class="stat-val">MobileNet</div>
-                        <div class="stat-lbl">Depthwise Convolutions</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-val">(96, 64)</div>
-                        <div class="stat-lbl">Log-Mel Spectrogram</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-val">521 Classes</div>
-                        <div class="stat-lbl">AudioSet Ontology</div>
-                    </div>
-                    <div class="stat-box">
-                        <div class="stat-val">1024-dim</div>
-                        <div class="stat-lbl">Audio Embeddings</div>
-                    </div>
-                </div>
-
-                <div class="grid-2">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Đóng Gói Offline SavedModel</div>
-                            <span class="badge badge-info">Local Deployment</span>
-                        </div>
-                        <div class="card-body">
-                            <ul>
-                                <li>Lưu trữ cục bộ tại thư mục <code>yamnet_model</code>.</li>
-                                <li>Hoạt động độc lập không phụ thuộc kết nối Internet.</li>
-                                <li>Dung lượng nhẹ, phù hợp cho CPU và vi máy tính.</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Độ Trễ Suy Luận (Inference Time)</div>
-                            <span class="badge badge-success">15ms - 30ms</span>
-                        </div>
-                        <div class="card-body">
-                            <ul>
-                                <li>Đạt tốc độ suy luận từ <strong>15ms - 30ms trên CPU thường</strong>.</li>
-                                <li>Đảm bảo tính phản ứng tức thời theo thời gian thực.</li>
-                                <li>Không yêu cầu phần cứng GPU đắt tiền.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ==================== SLIDE 4: DATASET & NGUỒN DỮ LIỆU ==================== -->
-            <section class="slide" data-section="III. Datasets Khảo Sát">
-                <div class="slide-title-container">
-                    <span class="slide-subtitle">PHẦN III</span>
-                    <h2 class="slide-title">TẬP DỮ LIỆU & MẪU THỬ NGHIỆM</h2>
-                </div>
-                
-                <div class="grid-3" style="margin-bottom: 1.25rem;">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">Google AudioSet</div>
-                            <span class="badge badge-secondary">2M+ Clips</span>
-                        </div>
-                        <div class="card-body">
-                            <p>Tập dữ liệu gốc của YAMNet gồm 2 triệu trích đoạn YouTube, bao phủ 521 nhãn sự kiện âm thanh môi trường và khẩn cấp.</p>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">ESC-50 Dataset</div>
-                            <span class="badge badge-info">2,000 Clips</span>
-                        </div>
-                        <div class="card-body">
-                            <p>50 lớp âm thanh môi trường chuẩn hóa: Tiếng kêu cứu, tiếng kính vỡ và tạp âm tự nhiên (mưa, gió, tiếng bước chân).</p>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="card-title">UrbanSound8K</div>
-                            <span class="badge badge-warning">8,732 Clips</span>
-                        </div>
-                        <div class="card-body">
-                            <p>10 lớp âm thanh đô thị: Tiếng súng nổ (gunshot), còi báo động (siren) và ồn sinh hoạt giao thông.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">Mẫu Âm Thanh Kiểm Thử Trực Tiếp</div>
-                        <span class="badge badge-danger">Real Audio Samples</span>
-                    </div>
-                    <div class="card-body">
-                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
-                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
-                                <div style="font-weight: 700; color: var(--danger); font-size: 0.95rem;">Explosion Audio</div>
-                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">dragon-studio-nuclear-explosion.mp3</div>
-                            </div>
-                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
-                                <div style="font-weight: 700; color: var(--warning); font-size: 0.95rem;">Scream / Cry Audio</div>
-                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">pataponai-hatapon-crying.mp3</div>
-                            </div>
-                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
-                                <div style="font-weight: 700; color: var(--info); font-size: 0.95rem;">Alarm & Live Mic</div>
-                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">assets/alarm.WAV & PyAudio Stream</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- ==================== SLIDE 5: DANH MỤC 6 NHÓM ÂM THANH MỤC TIÊU ==================== -->
-            <section class="slide" data-section="IV. 6 Nhóm Âm Thanh Mục Tiêu">
+            <!-- ==================== SLIDE 3: DANH MỤC 6 NHÓM ÂM THANH MỤC TIÊU ==================== -->
+            <section class="slide" data-section="II. 6 Nhóm Âm Thanh Mục Tiêu">
                 <div class="slide-title-container" style="margin-bottom: 1.25rem;">
-                    <span class="slide-subtitle">PHẦN IV</span>
+                    <span class="slide-subtitle">PHẦN II</span>
                     <h2 class="slide-title">DANH MỤC 6 NHÓM ÂM THANH MỤC TIÊU & ÁNH XẠ LOGIC</h2>
                 </div>
                 <table class="styled-table large-table">
@@ -929,6 +809,191 @@
                         </tr>
                     </tbody>
                 </table>
+            </section>
+
+            <!-- ==================== SLIDE 4: TỔNG QUAN CÁC THUẬT TOÁN CỐT LÕI ==================== -->
+            <section class="slide" data-section="III. Các Thuật Toán Cốt Lõi">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN III</span>
+                    <h2 class="slide-title">TỔNG QUAN 4 THUẬT TOÁN CỐT LÕI CỦA HỆ THỐNG</h2>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">1. Thuật Toán Học Sâu Cốt Lõi</div>
+                            <span class="badge badge-warning">Google YAMNet</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Mạng <strong>MobileNetV1</strong> (Depthwise Separable Convolutions) tối ưu siêu nhẹ.</li>
+                                <li>Huấn luyện sẵn trên <strong>Google AudioSet</strong> (2 triệu clip, 521 lớp âm thanh).</li>
+                                <li>Tốc độ suy luận <strong>15ms - 30ms</strong> trên CPU, không cần GPU đắt tiền.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">2. Thuật Toán Tiền Xử Lý Tín Hiệu</div>
+                            <span class="badge badge-info">STFT & Log-Mel</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Biến đổi Fourier thời gian ngắn <strong>STFT</strong> từ sóng âm 1D (16 kHz Mono).</li>
+                                <li>Trích xuất phổ <strong>Log-Mel Spectrogram 64 dải tần</strong> (cửa sổ trượt 960ms).</li>
+                                <li>Chuyển tín hiệu âm thanh thành ảnh phổ 2D ma trận <strong>(96, 64)</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">3. Thuật Toán Ánh Xạ & Phân Loại</div>
+                            <span class="badge badge-secondary">Top-K Keyword Filter</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Trích xuất <strong>Top 5 nhãn</strong> có xác suất cao nhất từ không gian 521 nhãn.</li>
+                                <li>Đối chiếu bộ lọc từ khóa nguy hiểm đa tầng (<em>screaming, gunshot...</em>).</li>
+                                <li>Phân loại chính xác về <strong>6 nhóm âm thanh mục tiêu</strong> của dự án.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">4. Thuật Toán Chống Báo Động Giả</div>
+                            <span class="badge badge-danger">Temporal & Anti-Spam</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li><strong>Dynamic Threshold:</strong> Lọc ngưỡng xác suất tin cậy <strong>Score ≥ 0.30</strong>.</li>
+                                <li><strong>Majority Voting:</strong> Cửa sổ trượt thời gian <strong>Sliding Window (k=3, count≥2)</strong>.</li>
+                                <li><strong>Anti-Spam Lock:</strong> Khóa cờ Email & Cooldown <strong>10s</strong> chống hoảng loạn.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 5: KIẾN TRÚC MÔ HÌNH YAMNET ==================== -->
+            <section class="slide" data-section="IV. Mô Hình Google YAMNet">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN IV</span>
+                    <h2 class="slide-title">KIẾN TRÚC MÔ HÌNH GOOGLE YAMNET</h2>
+                </div>
+                
+                <div class="grid-4" style="margin-bottom: 1.25rem;">
+                    <div class="stat-box">
+                        <div class="stat-val">MobileNet</div>
+                        <div class="stat-lbl">Depthwise Convolutions</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">(96, 64)</div>
+                        <div class="stat-lbl">Log-Mel Spectrogram</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">521 Classes</div>
+                        <div class="stat-lbl">AudioSet Ontology</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-val">1024-dim</div>
+                        <div class="stat-lbl">Audio Embeddings</div>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Đóng Gói Offline SavedModel</div>
+                            <span class="badge badge-info">Local Deployment</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Lưu trữ cục bộ tại thư mục <code>yamnet_model</code>.</li>
+                                <li>Hoạt động độc lập không phụ thuộc kết nối Internet.</li>
+                                <li>Dung lượng nhẹ, phù hợp cho CPU và vi máy tính.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Độ Trễ Suy Luận (Inference Time)</div>
+                            <span class="badge badge-success">15ms - 30ms</span>
+                        </div>
+                        <div class="card-body">
+                            <ul>
+                                <li>Đạt tốc độ suy luận từ <strong>15ms - 30ms trên CPU thường</strong>.</li>
+                                <li>Đảm bảo tính phản ứng tức thời theo thời gian thực.</li>
+                                <li>Không yêu cầu phần cứng GPU đắt tiền.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== SLIDE 6: DATASET & NGUỒN DỮ LIỆU ==================== -->
+            <section class="slide" data-section="V. Datasets Khảo Sát">
+                <div class="slide-title-container">
+                    <span class="slide-subtitle">PHẦN V</span>
+                    <h2 class="slide-title">TẬP DỮ LIỆU & MẪU THỬ NGHIỆM</h2>
+                </div>
+                
+                <div class="grid-3" style="margin-bottom: 1.25rem;">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">Google AudioSet</div>
+                            <span class="badge badge-secondary">2M+ Clips</span>
+                        </div>
+                        <div class="card-body">
+                            <p>Tập dữ liệu gốc của YAMNet gồm 2 triệu trích đoạn YouTube, bao phủ 521 nhãn sự kiện âm thanh môi trường và khẩn cấp.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">ESC-50 Dataset</div>
+                            <span class="badge badge-info">2,000 Clips</span>
+                        </div>
+                        <div class="card-body">
+                            <p>50 lớp âm thanh môi trường chuẩn hóa: Tiếng kêu cứu, tiếng kính vỡ và tạp âm tự nhiên (mưa, gió, tiếng bước chân).</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">UrbanSound8K</div>
+                            <span class="badge badge-warning">8,732 Clips</span>
+                        </div>
+                        <div class="card-body">
+                            <p>10 lớp âm thanh đô thị: Tiếng súng nổ (gunshot), còi báo động (siren) và ồn sinh hoạt giao thông.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Mẫu Âm Thanh Kiểm Thử Trực Tiếp</div>
+                        <span class="badge badge-danger">Real Audio Samples</span>
+                    </div>
+                    <div class="card-body">
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
+                                <div style="font-weight: 700; color: var(--danger); font-size: 0.95rem;">Explosion Audio</div>
+                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">dragon-studio-nuclear-explosion.mp3</div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
+                                <div style="font-weight: 700; color: var(--warning); font-size: 0.95rem;">Scream / Cry Audio</div>
+                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">pataponai-hatapon-crying.mp3</div>
+                            </div>
+                            <div style="background: #f8fafc; padding: 0.85rem 1rem; border-radius: 8px; border: 1px solid var(--border-card);">
+                                <div style="font-weight: 700; color: var(--info); font-size: 0.95rem;">Alarm & Live Mic</div>
+                                <div style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">assets/alarm.WAV & PyAudio Stream</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- ==================== SLIDE 6: GIẢI THUẬT QUYẾT ĐỊNH & CHỐNG BÁO GIẢ ==================== -->
