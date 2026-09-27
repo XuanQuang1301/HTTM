@@ -1,0 +1,2 @@
+# Chứa các file .wav tiếng la hét, tiếng người kêu cứu (Scream / Cry / Shout)
+# Đã được hỗ trợ sơ bộ trong YAMNet

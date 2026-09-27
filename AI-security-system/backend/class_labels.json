@@ -1,0 +1,19 @@
+{
+  "labels": [
+    "Tiếng La Hét / Kêu Cứu (Scream/Cry)",
+    "Tiếng Nổ / Tiếng Súng (Explosion/Gunshot)",
+    "Tiếng Vỡ Kính / Đập Phá (Glass Breaking)",
+    "Còi Báo Cháy / Báo Động (Fire Alarm/Siren)",
+    "Tiếng Va Đập / Tai Nạn (Impact/Crash)",
+    "Âm Thanh Nền Bình Thường (Normal Background)"
+  ],
+  "label_map": {
+    "01_Scream_Cry": 0,
+    "02_Explosion_Gunshot": 1,
+    "03_Glass_Breaking": 2,
+    "04_Fire_Alarm_Siren": 3,
+    "05_Impact_Crash": 4,
+    "06_Normal_Background": 5
+  },
+  "accuracy": 92.75
+}

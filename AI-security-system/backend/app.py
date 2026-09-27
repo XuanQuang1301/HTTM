@@ -31,6 +31,15 @@ audio_engine = AudioEngine()
 def health_check():
     return {"status": "ok", "message": "AI Security System Backend is running"}
 
+@app.get("/api/settings")
+def get_settings():
+    return audio_engine.get_settings()
+
+@app.post("/api/settings")
+def update_settings(settings: dict):
+    updated = audio_engine.update_settings(settings)
+    return {"status": "ok", "settings": updated}
+
 @app.get("/api/sample-files")
 def get_sample_files():
     samples = [
@@ -48,6 +57,16 @@ def get_sample_files():
         }
     ]
     return {"samples": samples}
+
+@app.get("/api/sample-files/{filename}")
+def stream_sample_file(filename: str):
+    allowed_files = ["dragon-studio-nuclear-explosion-386181.mp3", "pataponai-hatapon-crying-344088.mp3"]
+    if filename not in allowed_files:
+        raise HTTPException(status_code=404, detail="Sample file not found")
+    filepath = os.path.join(BASE_DIR, filename)
+    if os.path.exists(filepath):
+        return FileResponse(filepath, media_type="audio/mpeg")
+    raise HTTPException(status_code=404, detail="File not found")
 
 @app.post("/api/predict/sample/{filename}")
 def predict_sample_file(filename: str):

@@ -124,8 +124,13 @@ graph LR
 
 ```text
 HTTM/
-├── Docs/
-│   └── Tuan1.md             # Báo cáo chi tiết tiến độ Tuần 1
-├── slides.html              # Slide trình bày báo cáo tiến độ (HTML/CSS)
-└── README.md                # Tài liệu hướng dẫn và giới thiệu tổng quan dự án
+├── AI-security-system/     # Ứng dụng Backend (FastAPI + YAMNet) & Frontend (React + Vite)
+├── dataset/                # Tập dữ liệu âm thanh 6 nhãn mục tiêu (WAV 16kHz Mono)
+├── Docs/                   # Báo cáo tiến độ các tuần (Tuan1, Tuan2, Tuan3)
+├── scripts/                # Công cụ scripts xử lý dữ liệu và huấn luyện AI
+│   ├── download_missing_dataset.py  # Tải tự động mẫu dữ liệu âm thanh từ ESC-50
+│   ├── expand_explosion_dataset.py  # Cắt trích đoạn & tăng cường dữ liệu tiếng nổ/súng
+│   └── train_classifier.py          # Huấn luyện mô hình Transfer Learning 6 nhãn
+└── README.md               # Tài liệu giới thiệu tổng quan hệ thống
 ```
+

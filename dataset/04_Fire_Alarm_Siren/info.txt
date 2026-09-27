@@ -1,0 +1,2 @@
+# Chứa các file .wav tiếng còi báo cháy, tiếng chuông còi báo động khẩn cấp (Fire Alarm / Siren)
+# Đã được hỗ trợ sơ bộ trong YAMNet

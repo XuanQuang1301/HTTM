@@ -6,4 +6,17 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   envDir: path.resolve(__dirname, '..'), // Load .env from root directory
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    strictPort: true,
+    allowedHosts: true,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 })
