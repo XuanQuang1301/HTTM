@@ -1,0 +1,2 @@
+# [NHÃN CÒN THIẾU 1] Chứa các file .wav tiếng kính vỡ, tiếng đập phá kính (Glass Breaking / Shatter)
+# Hãy bổ sung file .wav từ ESC-50 (Class 39: glass_breaking) hoặc AudioSet vào đây để train

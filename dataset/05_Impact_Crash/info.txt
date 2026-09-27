@@ -1,0 +1,2 @@
+# [NHÃN CÒN THIẾU 2] Chứa các file .wav tiếng va đập mạnh, tai nạn giao thông, chấn động (Impact / Crash / Collision)
+# Hãy bổ sung file .wav từ UrbanSound8K / ESC-50 vào đây để train

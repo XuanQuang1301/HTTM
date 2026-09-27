@@ -12,6 +12,8 @@
     "dev:all": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,yellow.bold\" -n \"BACKEND,FRONTEND\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
     "dev:backend": "npm run dev --prefix backend",
     "dev:frontend": "npm run dev --prefix frontend",
+    "tunnel": "cloudflared tunnel --url http://localhost:5173",
+    "start:cloudflare": "concurrently -k -p \"[{name}]\" -c \"cyan.bold,yellow.bold,magenta.bold\" -n \"BACKEND,FRONTEND,TUNNEL\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\" \"cloudflared tunnel --url http://localhost:5173\"",
     "build": "turbo build"
   },
   "devDependencies": {

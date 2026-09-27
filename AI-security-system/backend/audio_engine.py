@@ -24,12 +24,109 @@ class AudioEngine:
             for row in reader:
                 self.class_names.append(row['display_name'])
                 
-        self.suspicious_keywords = [
-            "explosion", "boom", "bang", "burst", "fireworks", "artillery", "gunshot", "gunfire", "cap gun", "thump", "thud",
-            "crying", "sobbing", "screaming", "scream", "shout", "yell", "wail", "groan",
-            "alarm", "siren"
+        # Danger Categories Configuration
+        self.categories = [
+            {
+                "id": "01_Scream_Cry",
+                "name": "Tiếng La Hét / Kêu Cứu (Scream / Cry)",
+                "description": "Bao gồm tiếng khóc lóc, kêu cứu, la hét khẩn cấp",
+                "enabled": True,
+                "keywords": ["crying", "sobbing", "screaming", "scream", "shout", "yell", "wail", "groan"]
+            },
+            {
+                "id": "02_Explosion_Gunshot",
+                "name": "Tiếng Nổ / Tiếng Súng (Explosion / Gunshot)",
+                "description": "Bao gồm tiếng nổ bình gas, chập điện, pháo nổ, tiếng súng",
+                "enabled": True,
+                "keywords": ["explosion", "boom", "bang", "burst", "fireworks", "artillery", "gunshot", "gunfire", "cap gun"]
+            },
+            {
+                "id": "03_Glass_Breaking",
+                "name": "Tiếng Vỡ Kính / Đập Phá (Glass Breaking)",
+                "description": "Bao gồm tiếng kính vỡ, đột nhập đập phá",
+                "enabled": True,
+                "keywords": ["glass", "shatter", "breaking glass", "glass breaking"]
+            },
+            {
+                "id": "04_Fire_Alarm_Siren",
+                "name": "Còi Báo Cháy / Còi Báo Động (Fire Alarm / Siren)",
+                "description": "Bao gồm tiếng còi báo cháy, chuông cảnh báo sự cố",
+                "enabled": True,
+                "keywords": ["alarm", "siren", "fire alarm", "smoke detector"]
+            },
+            {
+                "id": "05_Impact_Crash",
+                "name": "Tiếng Va Đập / Tai Nạn (Impact / Crash)",
+                "description": "Bao gồm tiếng va quẹt xe, ngã đổ vật nặng, va chạm kết cấu",
+                "enabled": True,
+                "keywords": ["impact", "crash", "thump", "thud", "collision", "smash"]
+            }
         ]
-        self.threshold = 0.25
+        self.threshold = 0.25 # Ngưỡng mặc định 25%
+        self.alarm_sound_enabled = True
+        self.email_alert_enabled = True
+
+        # Load Custom Trained Classifier (if available)
+        self.custom_model_path = os.path.join(BASE_DIR, 'custom_sound_classifier.keras')
+        self.custom_classifier = None
+        self.custom_label_names = [
+            "Tiếng La Hét / Kêu Cứu (Scream/Cry)",
+            "Tiếng Nổ / Tiếng Súng (Explosion/Gunshot)",
+            "Tiếng Vỡ Kính / Đập Phá (Glass Breaking)",
+            "Còi Báo Cháy / Báo Động (Fire Alarm/Siren)",
+            "Tiếng Va Đập / Tai Nạn (Impact/Crash)",
+            "Âm Thanh Nền Bình Thường (Normal Background)"
+        ]
+        self.custom_cat_ids = [
+            "01_Scream_Cry",
+            "02_Explosion_Gunshot",
+            "03_Glass_Breaking",
+            "04_Fire_Alarm_Siren",
+            "05_Impact_Crash",
+            "06_Normal_Background"
+        ]
+        
+        if os.path.exists(self.custom_model_path):
+            try:
+                print(f"[INFO] Loading Custom Trained Classifier from '{self.custom_model_path}'...")
+                self.custom_classifier = tf.keras.models.load_model(self.custom_model_path)
+                print("[INFO] Successfully loaded Custom 6-Class Model!")
+            except Exception as e:
+                print(f"[CẢNH BÁO] Không thể load mô hình custom: {e}")
+
+
+    def get_settings(self):
+        return {
+            "categories": self.categories,
+            "threshold": self.threshold,
+            "alarm_sound_enabled": self.alarm_sound_enabled,
+            "email_alert_enabled": self.email_alert_enabled
+        }
+
+    def update_settings(self, new_settings):
+        if "threshold" in new_settings:
+            try:
+                self.threshold = float(new_settings["threshold"])
+            except (ValueError, TypeError):
+                pass
+        if "alarm_sound_enabled" in new_settings:
+            self.alarm_sound_enabled = bool(new_settings["alarm_sound_enabled"])
+        if "email_alert_enabled" in new_settings:
+            self.email_alert_enabled = bool(new_settings["email_alert_enabled"])
+        if "categories" in new_settings and isinstance(new_settings["categories"], list):
+            for cat in new_settings["categories"]:
+                for existing in self.categories:
+                    if existing["id"] == cat.get("id"):
+                        existing["enabled"] = bool(cat.get("enabled", True))
+        print(f"[CONFIG UPDATED] Active categories: {[c['id'] for c in self.categories if c['enabled']]}, Threshold: {self.threshold}")
+        return self.get_settings()
+
+    def get_active_keywords(self):
+        active_kws = []
+        for cat in self.categories:
+            if cat.get("enabled", True):
+                active_kws.extend(cat.get("keywords", []))
+        return active_kws
 
     def load_audio_16k_mono(self, filepath):
         """Loads audio file and converts to 16kHz mono float32 array."""
@@ -90,15 +187,16 @@ class AudioEngine:
                 "confidence": float(round(max_scores[idx] * 100, 2))
             })
 
-        # Check for danger events
+        # Check for danger events based on active keywords & threshold
+        active_keywords = self.get_active_keywords()
         danger_detected = False
         detected_events = []
 
         for pred in top5_predictions:
             label_lower = pred["label"].lower()
             conf_fraction = pred["confidence"] / 100.0
-            for keyword in self.suspicious_keywords:
-                if keyword in label_lower and conf_fraction > self.threshold:
+            for keyword in active_keywords:
+                if keyword in label_lower and conf_fraction >= self.threshold:
                     danger_detected = True
                     detected_events.append(pred)
 
@@ -126,13 +224,14 @@ class AudioEngine:
                 "confidence": float(round(max_scores[idx] * 100, 2))
             })
 
+        active_keywords = self.get_active_keywords()
         danger_detected = False
         detected_events = []
         for pred in top5_predictions:
             label_lower = pred["label"].lower()
             conf_fraction = pred["confidence"] / 100.0
-            for keyword in self.suspicious_keywords:
-                if keyword in label_lower and conf_fraction > self.threshold:
+            for keyword in active_keywords:
+                if keyword in label_lower and conf_fraction >= self.threshold:
                     danger_detected = True
                     detected_events.append(pred)
 
@@ -145,3 +244,4 @@ class AudioEngine:
             "event": primary_danger_event,
             "confidence": primary_confidence
         }
+
