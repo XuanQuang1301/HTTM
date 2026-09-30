@@ -63,13 +63,13 @@ Kiến trúc tổng quan gồm **4 khối chức năng nối tiếp nhau**:
 
 ```mermaid
 graph LR
-    A[Nguồn Âm Thanh Stream/Mic] --> B[Khối 1: Thu Nhận & Tiền Xử Lý]
-    B -->|Mel-Spectrogram 2D| C[Khối 2: Phân Loại & Suy Luận AI]
-    C -->|Label & Confidence Score| D[Khối 3: Quyết Định & Anti-False-Alarm]
-    D -->|Xác Nhận Sự Cố| E[Khối 4: Kích Hoạt Hành Động]
-    E --> F[Còi Báo Động Tại Chỗ]
-    E --> G[Ngắt Rơ-le Điện Khẩn Cấp]
-    E --> H[Gửi Telegram SOS / SMS]
+    A["Nguồn Âm Thanh Stream/Mic"] --> B["Khối 1: Thu Nhận & Tiền Xử Lý"]
+    B -->|"Mel-Spectrogram 2D"| C["Khối 2: Phân Loại & Suy Luận AI"]
+    C -->|"Label & Confidence Score"| D["Khối 3: Quyết Định & Anti-False-Alarm"]
+    D -->|"Xác Nhận Sự Cố"| E["Khối 4: Kích Hoạt Hành Động"]
+    E --> F["Còi Báo Động Tại Chỗ"]
+    E --> G["Ngắt Rơ-le Điện Khẩn Cấp"]
+    E --> H["Gửi Telegram SOS / SMS"]
 ```
 
 1. **Khối Thu nhận & Tiền xử lý (Input & Preprocessing):** Đọc tín hiệu âm thanh dạng sóng (Waveform) theo cửa sổ thời gian (1s/2s, overlap 50%), lọc nhiễu và chuyển sang phổ tần số **Mel-Spectrogram**.
