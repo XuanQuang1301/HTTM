@@ -8,7 +8,7 @@ import soundfile as sf
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
-# BASE_DIR points to project root (d:\PTIT\Nam_4_1\HTTM)
+# BASE_DIR points to project root
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 EXPLOSION_DIR = os.path.join(BASE_DIR, 'dataset', '02_Explosion_Gunshot')
 os.makedirs(EXPLOSION_DIR, exist_ok=True)
