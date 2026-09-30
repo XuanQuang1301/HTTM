@@ -106,14 +106,14 @@ Ma trận xác suất 6 nhãn (Probability Matrix: 0% -> 100%)
 
 ## V. PHÁT TRIỂN TRANG QUẢN TRỊ ADMIN VÀ TÍCH HỢP BACKEND
 
-### 1. Nâng cấp Backend API ([audio_engine.py](file:///d:/PTIT/Nam_4_1/HTTM/AI-security-system/backend/audio_engine.py) & [app.py](file:///d:/PTIT/Nam_4_1/HTTM/AI-security-system/backend/app.py))
+### 1. Nâng cấp Backend API ([audio_engine.py](../../AI-security-system/backend/audio_engine.py) & [app.py](../../AI-security-system/backend/app.py))
 - Nạp tự động file mô hình học sâu đã train `custom_sound_classifier.keras`.
 - Xây dựng hai REST API endpoints mới:
   - `GET /api/settings`: Trả về danh sách cấu hình trạng thái bật/tắt của 5 nhãn nguy hiểm và ngưỡng độ tin cậy.
   - `POST /api/settings`: Nhận dữ liệu cập nhật từ Admin và áp dụng ngay lập tức vào luồng dự đoán realtime.
 
-### 2. Giao diện Trang Quản Trị Admin ([App.jsx](file:///d:/PTIT/Nam_4_1/HTTM/AI-security-system/frontend/src/App.jsx))
-- Thêm thanh chuyển tab mượt mà: `📊 Dashboard Giám Sát Realtime` và `⚙️ Trang Quản Trị Nhãn Cảnh Báo`.
+### 2. Giao diện Trang Quản Trị Admin ([App.jsx](../../AI-security-system/frontend/src/App.jsx))
+- Thêm thanh chuyển tab mượt mà: `Dashboard Giám Sát Realtime` và `Trang Quản Trị Nhãn Cảnh Báo`.
 - **Chức năng Admin:**
   - **Quản lý danh mục nhãn:** Công tắc (Toggle Switch) cho phép bật/tắt từng nhãn cảnh báo nguy hiểm (`Scream`, `Explosion`, `Glass Breaking`, `Fire Alarm`, `Impact`).
   - **Thanh trượt ngưỡng độ tin cậy (Confidence Threshold Slider):** Cho phép kéo điều chỉnh ngưỡng nhận diện từ `10%` đến `80%` (mặc định `25%`).

@@ -2,8 +2,8 @@
 
 > **Môn học:** Hệ Thống Thông Minh (HTTM)  
 > **Đơn vị:** Học viện Công nghệ Bưu chính Viễn thông (PTIT)  
-> **Slide Báo Cáo:** [slides.html](file:///d:/PTIT/Nam_4_1/HTTM/slides.html)  
-> **Chi Tiết Tuần 1:** [Docs/Tuan1.md](file:///d:/PTIT/Nam_4_1/HTTM/Docs/Tuan1.md)
+> **Slide Báo Cáo:** [slides.html](slides.html)  
+> **Chi Tiết Tuần 1:** [Docs/Tuan1.md](Docs/Tuan1.md)
 
 ---
 
@@ -128,9 +128,13 @@ HTTM/
 ├── dataset/                # Tập dữ liệu âm thanh 6 nhãn mục tiêu (WAV 16kHz Mono)
 ├── Docs/                   # Báo cáo tiến độ các tuần (Tuan1, Tuan2, Tuan3)
 ├── scripts/                # Công cụ scripts xử lý dữ liệu và huấn luyện AI
+│   ├── README.md                    # Hướng dẫn chi tiết lấy dataset & train thêm bộ nhãn mới
 │   ├── download_missing_dataset.py  # Tải tự động mẫu dữ liệu âm thanh từ ESC-50
 │   ├── expand_explosion_dataset.py  # Cắt trích đoạn & tăng cường dữ liệu tiếng nổ/súng
 │   └── train_classifier.py          # Huấn luyện mô hình Transfer Learning 6 nhãn
 └── README.md               # Tài liệu giới thiệu tổng quan hệ thống
 ```
+
+> **Hướng dẫn chi tiết:** Xem file [scripts/README.md](scripts/README.md) để biết cách lấy dataset công cộng và huấn luyện thêm các bộ nhãn âm thanh khác.
+
 
