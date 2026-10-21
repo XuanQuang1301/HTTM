@@ -67,7 +67,10 @@ class AudioEngine:
         self.email_alert_enabled = True
 
         # Load Custom Trained Classifier (if available)
-        self.custom_model_path = os.path.join(BASE_DIR, 'custom_sound_classifier.keras')
+        self.custom_model_path = os.path.join(BASE_DIR, 'custom_sound_classifier_01.keras')
+        if not os.path.exists(self.custom_model_path):
+            self.custom_model_path = os.path.join(BASE_DIR, 'custom_sound_classifier.keras')
+
         self.custom_classifier = None
         self.custom_label_names = [
             "Tiếng La Hét / Kêu Cứu (Scream/Cry)",

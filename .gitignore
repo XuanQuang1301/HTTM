@@ -1,0 +1,27 @@
+# Dataset & Heavy Audio Files
+dataset/
+*.wav
+*.mp3
+*.ogg
+
+# Model Files (Keras / TensorFlow)
+*.keras
+*.h5
+*.tflite
+*.pb
+yamnet_model/
+# Cho phép push file mô hình chính nhẹ (~3.4MB) để backend chạy ngay
+!AI-security-system/backend/custom_sound_classifier_01.keras
+!AI-security-system/backend/custom_sound_classifier.keras
+
+# Python & Environment
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+
+# Node.js & Build outputs
+node_modules/
+dist/
+.turbo/

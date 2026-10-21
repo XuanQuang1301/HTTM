@@ -1,2 +1,0 @@
-# Chứa các file .wav tiếng nổ bình gas, nổ điện, tiếng súng (Explosion / Gunshot)
-# Đã được hỗ trợ sơ bộ trong YAMNet
