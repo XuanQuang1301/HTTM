@@ -1,11 +1,61 @@
 {
   "labels": [
-    "Tiếng La Hét / Kêu Cứu (Scream/Cry)",
-    "Tiếng Nổ / Tiếng Súng (Explosion/Gunshot)",
-    "Tiếng Vỡ Kính / Đập Phá (Glass Breaking)",
-    "Còi Báo Cháy / Báo Động (Fire Alarm/Siren)",
-    "Tiếng Va Đập / Tai Nạn (Impact/Crash)",
-    "Âm Thanh Nền Bình Thường (Normal Background)"
+    "Scream / Cry for help",
+    "Explosion / Gunshot",
+    "Glass Breaking",
+    "Fire Alarm / Siren",
+    "Impact / Crash",
+    "Normal Background"
+  ],
+  "label_details": [
+    {
+      "id": "01_Scream_Cry",
+      "name": "Scream / Cry for help",
+      "vietnamese": "Tiếng la hét, tiếng người kêu cứu, bạo lực",
+      "action": "Kích hoạt còi hú tại chỗ, gửi thông báo khẩn SOS",
+      "priority": "Khẩn cấp",
+      "is_danger": true
+    },
+    {
+      "id": "02_Explosion_Gunshot",
+      "name": "Explosion / Gunshot",
+      "vietnamese": "Tiếng nổ bình gas, nổ chập điện, tiếng súng",
+      "action": "Rung chuông toàn hệ thống, gửi cảnh báo nguy hiểm cấp cao nhất",
+      "priority": "Tối khẩn",
+      "is_danger": true
+    },
+    {
+      "id": "03_Glass_Breaking",
+      "name": "Glass Breaking",
+      "vietnamese": "Tiếng đập phá, vỡ kính đột nhập",
+      "action": "Phát còi cảnh báo tại điểm, gửi cảnh báo nghi vấn xâm nhập",
+      "priority": "Cao",
+      "is_danger": true
+    },
+    {
+      "id": "04_Fire_Alarm_Siren",
+      "name": "Fire Alarm / Siren",
+      "vietnamese": "Tiếng còi báo cháy, chuông cảnh báo sự cố",
+      "action": "Gửi thông báo sơ tán và cảnh báo cháy",
+      "priority": "Khẩn cấp",
+      "is_danger": true
+    },
+    {
+      "id": "05_Impact_Crash",
+      "name": "Impact / Crash",
+      "vietnamese": "Va quẹt xe, ngã đổ vật nặng, va chạm kết cấu",
+      "action": "Yêu cầu bảo vệ kiểm tra, lưu trích đoạn âm thanh",
+      "priority": "Trung bình",
+      "is_danger": true
+    },
+    {
+      "id": "06_Normal_Background",
+      "name": "Normal Background",
+      "vietnamese": "Tiếng nói chuyện, sinh hoạt, mưa rơi, tiếng ồn giao thông",
+      "action": "Hệ thống ghi nhận bình thường, bỏ qua báo động giả",
+      "priority": "Bình thường",
+      "is_danger": false
+    }
   ],
   "label_map": {
     "01_Scream_Cry": 0,
