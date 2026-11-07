@@ -14,41 +14,60 @@ export default function App() {
     categories: [
       {
         id: "01_Scream_Cry",
-        name: "Tiếng La Hét / Kêu Cứu (Scream / Cry)",
-        description: "Bao gồm tiếng khóc lóc, kêu cứu, la hét khẩn cấp",
-        enabled: true,
-        keywords: ["crying", "sobbing", "screaming", "scream", "shout", "yell", "wail", "groan"]
+        name: "Scream / Cry for help",
+        vietnamese: "Tiếng la hét, tiếng người kêu cứu, bạo lực",
+        action: "Kích hoạt còi hú tại chỗ, gửi cảnh báo SOS",
+        priority: "Khẩn cấp",
+        is_danger: true,
+        enabled: true
       },
       {
         id: "02_Explosion_Gunshot",
-        name: "Tiếng Nổ / Tiếng Súng (Explosion / Gunshot)",
-        description: "Bao gồm tiếng nổ bình gas, chập điện, pháo nổ, tiếng súng",
-        enabled: true,
-        keywords: ["explosion", "boom", "bang", "burst", "fireworks", "artillery", "gunshot", "gunfire", "cap gun"]
+        name: "Explosion / Gunshot",
+        vietnamese: "Tiếng nổ bình gas, nổ chập điện, tiếng súng",
+        action: "Rung chuông toàn hệ thống, cảnh báo cấp cao nhất",
+        priority: "Tối khẩn",
+        is_danger: true,
+        enabled: true
       },
       {
         id: "03_Glass_Breaking",
-        name: "Tiếng Vỡ Kính / Đập Phá (Glass Breaking)",
-        description: "Bao gồm tiếng kính vỡ, đột nhập đập phá cửa",
-        enabled: true,
-        keywords: ["glass", "shatter", "breaking glass", "glass breaking"]
+        name: "Glass Breaking",
+        vietnamese: "Tiếng đập phá, vỡ kính đột nhập",
+        action: "Còi cảnh báo tại điểm, báo nghi vấn xâm nhập",
+        priority: "Cao",
+        is_danger: true,
+        enabled: true
       },
       {
         id: "04_Fire_Alarm_Siren",
-        name: "Còi Báo Cháy / Còi Báo Động (Fire Alarm / Siren)",
-        description: "Bao gồm tiếng còi báo cháy, chuông cảnh báo sự cố",
-        enabled: true,
-        keywords: ["alarm", "siren", "fire alarm", "smoke detector"]
+        name: "Fire Alarm / Siren",
+        vietnamese: "Còi báo cháy, chuông cảnh báo sự cố",
+        action: "Gửi thông báo sơ tán, cảnh báo cháy",
+        priority: "Khẩn cấp",
+        is_danger: true,
+        enabled: true
       },
       {
         id: "05_Impact_Crash",
-        name: "Tiếng Va Đập / Tai Nạn (Impact / Crash)",
-        description: "Bao gồm tiếng va quẹt xe, ngã đổ vật nặng, va chạm kết cấu",
-        enabled: true,
-        keywords: ["impact", "crash", "thump", "thud", "collision", "smash"]
+        name: "Impact / Crash",
+        vietnamese: "Va quẹt xe, ngã đổ vật nặng, va chạm",
+        action: "Yêu cầu bảo vệ kiểm tra, lưu trích đoạn âm thanh",
+        priority: "Trung bình",
+        is_danger: true,
+        enabled: true
+      },
+      {
+        id: "06_Normal_Background",
+        name: "Normal Background",
+        vietnamese: "Tiếng nói chuyện, sinh hoạt, mưa rơi, giao thông",
+        action: "Hệ thống bình thường, bỏ qua báo động giả",
+        priority: "Bình thường",
+        is_danger: false,
+        enabled: true
       }
     ],
-    threshold: 0.25,
+    threshold: 0.50,
     alarm_sound_enabled: true,
     email_alert_enabled: true
   });
@@ -72,6 +91,8 @@ export default function App() {
   const audioCtxRef = useRef(null);
   const synthOscRef = useRef(null);
   const synthGainRef = useRef(null);
+  const lastAlertTimeRef = useRef(0);
+  const lastAlertEventRef = useRef(null);
 
   // Mic Realtime Stream State
   const [isListening, setIsListening] = useState(false);
@@ -452,13 +473,21 @@ export default function App() {
           setIsDanger(true);
           setDangerEvent(data.event);
           setDangerConfidence(data.confidence);
-          addLog(`[ALERT-MIC] CẢNH BÁO NGUY HIỂM: ${data.event} (${data.confidence}%)`, 'danger');
+
+          // Chỉ ghi log cảnh báo khi sự kiện mới hoặc cách lần ghi log trước ít nhất 3 giây (tránh spam)
+          const now = Date.now();
+          if (!lastAlertTimeRef.current || (now - lastAlertTimeRef.current > 3000) || lastAlertEventRef.current !== data.event) {
+            lastAlertTimeRef.current = now;
+            lastAlertEventRef.current = data.event;
+            addLog(`[ALERT-MIC] CẢNH BÁO NGUY HIỂM: ${data.event} (${data.confidence}%)`, 'danger');
+          }
 
           if (alarmAudioRef.current && !alarmMuted && adminSettings.alarm_sound_enabled) {
-            alarmAudioRef.current.currentTime = 0;
             alarmAudioRef.current.play().catch(e => console.error("Audio play blocked:", e));
           }
         }
+        // Lưu ý: Không tự động setIsDanger(false). Chuông sẽ tiếp tục kêu và banner cảnh báo giữ nguyên
+        // cho đến khi người dùng bấm nút "Dừng Cảnh Báo Ngay".
       }
     } catch (err) {
       console.error("Mic predict error:", err);
@@ -498,9 +527,29 @@ export default function App() {
           sampleBuffer.push(inputChannel[i]);
         }
 
-        if (sampleBuffer.length >= audioContext.sampleRate * 0.75) {
+        // Tích lũy 1.0 giây âm thanh để AI nhận diện chuẩn xác nhất (thay vì 0.75s)
+        if (sampleBuffer.length >= audioContext.sampleRate * 1.0) {
           const rawPCM = new Float32Array(sampleBuffer);
           sampleBuffer = [];
+
+          // Tính năng lượng âm thanh RMS
+          let sumSquares = 0;
+          for (let i = 0; i < rawPCM.length; i++) {
+            sumSquares += rawPCM[i] * rawPCM[i];
+          }
+          const rms = Math.sqrt(sumSquares / rawPCM.length);
+
+          // Nếu tiếng ồn quá nhỏ (yên tĩnh, gõ phím rất nhẹ) -> Bỏ qua không kích hoạt thêm báo động mới
+          if (rms < 0.008) {
+            setPredictions([
+              { label: 'Normal Background', confidence: 98.5 },
+              { label: 'Scream / Cry for help', confidence: 0.5 },
+              { label: 'Impact / Crash', confidence: 0.4 },
+              { label: 'Glass Breaking', confidence: 0.3 },
+              { label: 'Fire Alarm / Siren', confidence: 0.3 }
+            ]);
+            return;
+          }
 
           const pcm16k = resampleBuffer(rawPCM, audioContext.sampleRate, 16000);
           const wavBlob = encodeWAV(pcm16k, 16000);
@@ -527,14 +576,10 @@ export default function App() {
   }, []);
 
   const getProgressColor = (confidence, label) => {
-    const activeKws = [];
-    adminSettings.categories.forEach(c => {
-      if (c.enabled) activeKws.push(...c.keywords);
-    });
+    const matchedCat = adminSettings.categories.find(c => c.name === label || c.id === label);
+    const isDangerCat = matchedCat ? (matchedCat.is_danger && matchedCat.enabled) : (label !== 'Normal Background');
 
-    const isSuspicious = activeKws.some(kw => label.toLowerCase().includes(kw));
-
-    if (isSuspicious && (confidence / 100) >= adminSettings.threshold) {
+    if (isDangerCat && (confidence / 100) >= adminSettings.threshold) {
       return '#dc2626'; // Red
     }
     if (confidence > 70) {
@@ -604,7 +649,7 @@ export default function App() {
         >
           Trang Quản Trị Nhãn Cảnh Báo
           <span className="badge badge-muted" style={{ marginLeft: '4px' }}>
-            {activeCategoryCount}/5 Nhãn
+            {activeCategoryCount}/{adminSettings.categories.length} Nhãn
           </span>
         </button>
       </nav>
@@ -668,26 +713,26 @@ export default function App() {
 
               <div className="clean-card" style={{ padding: '18px' }}>
                 <div style={{ marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '15px', fontWeight: '600' }}>2. Test Với File MP3 Mẫu</h3>
+                  <h3 style={{ fontSize: '15px', fontWeight: '600' }}>2. Test Với File Âm Thanh Mẫu</h3>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <button 
                     disabled={loading}
-                    onClick={() => handleTestSample('dragon-studio-nuclear-explosion-386181.mp3', 'Tiếng nổ')} 
+                    onClick={() => handleTestSample('sample_explosion.wav', 'Tiếng nổ')} 
                     className="btn-compact btn-danger"
                     style={{ justifyContent: 'space-between' }}
                   >
-                    <span>File 1: Tiếng Nổ (Explosion)</span>
+                    <span>File 1: Tiếng Nổ (Explosion WAV)</span>
                   </button>
 
                   <button 
                     disabled={loading}
-                    onClick={() => handleTestSample('pataponai-hatapon-crying-344088.mp3', 'Tiếng khóc')} 
+                    onClick={() => handleTestSample('sample_crying_baby.wav', 'Tiếng khóc')} 
                     className="btn-compact btn-primary"
                     style={{ justifyContent: 'space-between' }}
                   >
-                    <span>File 2: Tiếng Khóc (Crying)</span>
+                    <span>File 2: Tiếng Khóc / La Hét (Scream/Cry WAV)</span>
                   </button>
                 </div>
               </div>
@@ -805,11 +850,11 @@ export default function App() {
                 <p style={{ fontSize: '11px', color: '#64748b' }}>Bật/tắt nhãn âm thanh hệ thống sẽ phát hiện là nguy hiểm</p>
               </div>
               <span className="badge badge-success" style={{ fontSize: '11px', padding: '3px 8px' }}>
-                Đang bật {activeCategoryCount}/5
+                Đang bật {activeCategoryCount}/{adminSettings.categories.length} Nhãn
               </span>
             </div>
 
-            {/* 5 COMPACT CATEGORY ROWS */}
+            {/* 6 COMPACT CATEGORY ROWS */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
               {adminSettings.categories.map((cat) => (
                 <div 
@@ -821,23 +866,42 @@ export default function App() {
                     padding: '8px 12px', 
                     borderRadius: '6px', 
                     border: '1px solid',
-                    borderColor: cat.enabled ? '#bfdbfe' : '#e2e8f0',
-                    background: cat.enabled ? '#eff6ff' : '#f8fafc',
+                    borderColor: cat.enabled ? (cat.is_danger ? '#bfdbfe' : '#bbf7d0') : '#e2e8f0',
+                    background: cat.enabled ? (cat.is_danger ? '#eff6ff' : '#f0fdf4') : '#f8fafc',
                     gap: '10px'
                   }}
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span style={{ fontWeight: '600', fontSize: '13px', color: cat.enabled ? '#1e3a8a' : '#334155', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                      <span style={{ fontWeight: '700', fontSize: '13px', color: cat.enabled ? '#1e3a8a' : '#334155' }}>
                         {cat.name}
                       </span>
+                      {cat.priority && (
+                        <span 
+                          style={{ 
+                            fontSize: '10px', 
+                            padding: '1px 6px', 
+                            borderRadius: '4px',
+                            fontWeight: '600',
+                            background: cat.priority === 'Tối khẩn' ? '#fee2e2' : cat.priority === 'Khẩn cấp' ? '#ffedd5' : cat.priority === 'Cao' ? '#fef3c7' : cat.priority === 'Trung bình' ? '#e0f2fe' : '#f1f5f9',
+                            color: cat.priority === 'Tối khẩn' ? '#dc2626' : cat.priority === 'Khẩn cấp' ? '#ea580c' : cat.priority === 'Cao' ? '#d97706' : cat.priority === 'Trung bình' ? '#0284c7' : '#64748b'
+                          }}
+                        >
+                          {cat.priority}
+                        </span>
+                      )}
                       <span className={`badge ${cat.enabled ? 'badge-success' : 'badge-muted'}`} style={{ fontSize: '10px', padding: '1px 5px' }}>
                         {cat.enabled ? 'Bật' : 'Tắt'}
                       </span>
                     </div>
-                    <p style={{ fontSize: '11px', color: '#64748b', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginTop: '1px' }}>
-                      {cat.description}
+                    <p style={{ fontSize: '11px', color: '#475569', marginTop: '2px', lineHeight: '1.3' }}>
+                      {cat.vietnamese || cat.description}
                     </p>
+                    {cat.action && (
+                      <p style={{ fontSize: '11px', color: '#0369a1', marginTop: '1px', fontStyle: 'italic' }}>
+                        ↳ Phản ứng: {cat.action}
+                      </p>
+                    )}
                   </div>
 
                   {/* TOGGLE SWITCH */}

@@ -45,32 +45,33 @@ def get_sample_files():
     samples = [
         {
             "id": "explosion",
-            "name": "Tiếng Nổ (Explosion MP3)",
-            "filename": "dragon-studio-nuclear-explosion-386181.mp3",
-            "description": "File mẫu âm thanh nổ hạt nhân / cháy nổ"
+            "name": "Tiếng Nổ (Explosion WAV)",
+            "filename": "sample_explosion.wav",
+            "description": "File mẫu âm thanh cháy nổ, tiếng súng (Dataset 02_Explosion_Gunshot)"
         },
         {
             "id": "crying",
-            "name": "Tiếng Khóc Lóc (Crying MP3)",
-            "filename": "pataponai-hatapon-crying-344088.mp3",
-            "description": "File mẫu âm thanh trẻ em/người khóc lóc kêu cứu"
+            "name": "Tiếng Khóc / La Hét (Scream/Cry WAV)",
+            "filename": "sample_crying_baby.wav",
+            "description": "File mẫu âm thanh trẻ em/người khóc lóc kêu cứu (Dataset 01_Scream_Cry)"
         }
     ]
     return {"samples": samples}
 
 @app.get("/api/sample-files/{filename}")
 def stream_sample_file(filename: str):
-    allowed_files = ["dragon-studio-nuclear-explosion-386181.mp3", "pataponai-hatapon-crying-344088.mp3"]
+    allowed_files = ["sample_explosion.wav", "sample_crying_baby.wav", "dragon-studio-nuclear-explosion-386181.mp3", "pataponai-hatapon-crying-344088.mp3"]
     if filename not in allowed_files:
         raise HTTPException(status_code=404, detail="Sample file not found")
     filepath = os.path.join(BASE_DIR, filename)
     if os.path.exists(filepath):
-        return FileResponse(filepath, media_type="audio/mpeg")
+        media_type = "audio/wav" if filename.endswith('.wav') else "audio/mpeg"
+        return FileResponse(filepath, media_type=media_type)
     raise HTTPException(status_code=404, detail="File not found")
 
 @app.post("/api/predict/sample/{filename}")
 def predict_sample_file(filename: str):
-    allowed_files = ["dragon-studio-nuclear-explosion-386181.mp3", "pataponai-hatapon-crying-344088.mp3"]
+    allowed_files = ["sample_explosion.wav", "sample_crying_baby.wav", "dragon-studio-nuclear-explosion-386181.mp3", "pataponai-hatapon-crying-344088.mp3"]
     if filename not in allowed_files:
         raise HTTPException(status_code=404, detail="Sample file not found")
         
