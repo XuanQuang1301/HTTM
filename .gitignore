@@ -13,6 +13,7 @@ yamnet_model/
 # Cho phép push file mô hình chính nhẹ (~3.4MB) để backend chạy ngay
 !AI-security-system/backend/custom_sound_classifier_01.keras
 !AI-security-system/backend/custom_sound_classifier.keras
+!AI-security-system/backend/custom_sound_classifier_02.keras
 
 # Python & Environment
 __pycache__/

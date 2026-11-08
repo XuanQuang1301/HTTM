@@ -6,7 +6,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard'); // 'dashboard' | 'admin'
   const [backendStatus, setBackendStatus] = useState('checking'); // 'online' | 'offline' | 'checking'
-  const [loading, setLoading] = useState(false);
   const [saveToast, setSaveToast] = useState('');
   
   // Admin Configuration State
@@ -323,77 +322,6 @@ export default function App() {
     }, 3000);
   };
 
-  // 1. Test Sample Audio File
-  const handleTestSample = async (filename, sampleName) => {
-    unlockAudio();
-    setLoading(true);
-
-    if (sampleAudioRef.current) {
-      sampleAudioRef.current.src = `${API_BASE_URL}/api/sample-files/${filename}`;
-      sampleAudioRef.current.currentTime = 0;
-      sampleAudioRef.current.play().catch(e => console.warn("Sample audio play blocked:", e));
-    }
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/predict/sample/${filename}`, {
-        method: 'POST'
-      });
-      const data = await res.json();
-      
-      if (data.top5) {
-        setPredictions(data.top5);
-        setIsDanger(data.is_danger);
-        setDangerEvent(data.event);
-        setDangerConfidence(data.confidence);
-
-        if (data.is_danger) {
-          addLog(`[ALERT] Phát hiện nguy hiểm: ${data.event} (${data.confidence}%)`, 'danger');
-        } else {
-          addLog(`[SAFE] File ${sampleName} - An toàn`, 'safe');
-        }
-      }
-    } catch (err) {
-      addLog(`Lỗi kết nối Backend: ${err.message}`, 'danger');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // 2. Custom File Upload
-  const handleFileUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    unlockAudio();
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/predict/upload`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      
-      if (data.top5) {
-        setPredictions(data.top5);
-        setIsDanger(data.is_danger);
-        setDangerEvent(data.event);
-        setDangerConfidence(data.confidence);
-
-        if (data.is_danger) {
-          addLog(`[ALERT] Phát hiện nguy hiểm từ file upload: ${data.event} (${data.confidence}%)`, 'danger');
-        } else {
-          addLog(`[SAFE] File ${file.name} - An toàn`, 'safe');
-        }
-      }
-    } catch (err) {
-      addLog(`Lỗi upload file: ${err.message}`, 'danger');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   // Helper PCM Audio Encoder
   function encodeWAV(samples, sampleRate = 16000) {
@@ -439,24 +367,40 @@ export default function App() {
   const audioContextRef = useRef(null);
   const micStreamRef = useRef(null);
   const audioProcessorRef = useRef(null);
+  const isStartingMicRef = useRef(false);
+  const isListeningRef = useRef(false);
 
   const stopMicrophone = () => {
+    isListeningRef.current = false;
+    setIsListening(false);
+
     if (audioProcessorRef.current) {
-      try { audioProcessorRef.current.disconnect(); } catch (e) {}
+      try {
+        audioProcessorRef.current.onaudioprocess = null;
+        audioProcessorRef.current.disconnect();
+      } catch (e) {}
       audioProcessorRef.current = null;
     }
     if (audioContextRef.current) {
-      try { audioContextRef.current.close(); } catch (e) {}
+      try {
+        audioContextRef.current.close();
+      } catch (e) {}
       audioContextRef.current = null;
     }
     if (micStreamRef.current) {
-      try { micStreamRef.current.getTracks().forEach(t => t.stop()); } catch (e) {}
+      try {
+        micStreamRef.current.getTracks().forEach(t => {
+          t.stop();
+          t.enabled = false;
+        });
+      } catch (e) {}
       micStreamRef.current = null;
     }
-    setIsListening(false);
   };
 
   const sendMicChunkToBackend = async (blob) => {
+    if (!isListeningRef.current) return;
+
     const formData = new FormData();
     formData.append('file', blob, 'mic_chunk.wav');
 
@@ -466,7 +410,11 @@ export default function App() {
         body: formData
       });
       if (!res.ok) return;
+      if (!isListeningRef.current) return;
+
       const data = await res.json();
+      if (!isListeningRef.current) return;
+
       if (data.top5 && data.top5.length > 0) {
         setPredictions(data.top5);
         if (data.is_danger) {
@@ -494,12 +442,10 @@ export default function App() {
     }
   };
 
-  const toggleMicrophone = async () => {
-    if (isListening) {
-      stopMicrophone();
-      addLog('[MIC] Đã tắt Microphone nhận diện', 'info');
-      return;
-    }
+  const startMicrophone = async (isAuto = false) => {
+    // Khóa tránh gọi nhiều stream microphone đồng thời (race condition)
+    if (isStartingMicRef.current || micStreamRef.current) return;
+    isStartingMicRef.current = true;
 
     if (alarmAudioRef.current) {
       alarmAudioRef.current.play().then(() => {
@@ -510,10 +456,33 @@ export default function App() {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Nếu người dùng đã chủ động tắt mic trong lúc chờ xin quyền getUserMedia
+      if (isAuto && localStorage.getItem('mic_auto_listen') === 'false') {
+        stream.getTracks().forEach(t => {
+          t.stop();
+          t.enabled = false;
+        });
+        return;
+      }
+
+      // Đảm bảo stream cũ đã dừng triệt để nếu còn sót
+      if (micStreamRef.current) {
+        try {
+          micStreamRef.current.getTracks().forEach(t => {
+            t.stop();
+            t.enabled = false;
+          });
+        } catch (e) {}
+      }
+
       micStreamRef.current = stream;
 
       const audioContext = new (window.AudioContext || window.webkitAudioContext)();
       audioContextRef.current = audioContext;
+      if (audioContext.state === 'suspended') {
+        audioContext.resume().catch(() => {});
+      }
 
       const source = audioContext.createMediaStreamSource(stream);
       const processor = audioContext.createScriptProcessor(4096, 1, 1);
@@ -522,6 +491,8 @@ export default function App() {
       let sampleBuffer = [];
 
       processor.onaudioprocess = (e) => {
+        if (!isListeningRef.current) return;
+
         const inputChannel = e.inputBuffer.getChannelData(0);
         for (let i = 0; i < inputChannel.length; i++) {
           sampleBuffer.push(inputChannel[i]);
@@ -531,6 +502,8 @@ export default function App() {
         if (sampleBuffer.length >= audioContext.sampleRate * 1.0) {
           const rawPCM = new Float32Array(sampleBuffer);
           sampleBuffer = [];
+
+          if (!isListeningRef.current) return;
 
           // Tính năng lượng âm thanh RMS
           let sumSquares = 0;
@@ -561,16 +534,59 @@ export default function App() {
       source.connect(processor);
       processor.connect(audioContext.destination);
 
+      isListeningRef.current = true;
       setIsListening(true);
-      addLog('[MIC] Đã bật Microphone - Đang lắng nghe thời gian thực (WAV PCM 16kHz)...', 'safe');
+      if (isAuto) {
+        addLog('[MIC] Đã tự động kích hoạt Microphone thời gian thực (WAV PCM 16kHz)', 'safe');
+      } else {
+        addLog('[MIC] Đã bật Microphone - Đang lắng nghe thời gian thực (WAV PCM 16kHz)...', 'safe');
+      }
 
     } catch (err) {
-      alert(`Không thể truy cập Microphone: ${err.message}. Hãy cấp quyền micro trên trình duyệt!`);
+      isListeningRef.current = false;
+      setIsListening(false);
+      if (!isAuto) {
+        alert(`Không thể truy cập Microphone: ${err.message}. Hãy cấp quyền micro trên trình duyệt!`);
+      } else {
+        console.warn('[MIC] Tự động bật mic đang chờ cấp quyền hoặc tương tác:', err.message);
+      }
+    } finally {
+      isStartingMicRef.current = false;
+    }
+  };
+
+  const toggleMicrophone = async () => {
+    if (isListening || micStreamRef.current) {
+      localStorage.setItem('mic_auto_listen', 'false');
+      stopMicrophone();
+      addLog('[MIC] Đã tắt Microphone nhận diện', 'info');
+    } else {
+      localStorage.setItem('mic_auto_listen', 'true');
+      await startMicrophone(false);
     }
   };
 
   useEffect(() => {
+    // Tự động bật mic khi load/reload trang nếu người dùng chưa chủ động tắt
+    const shouldAutoStart = localStorage.getItem('mic_auto_listen') !== 'false';
+    if (shouldAutoStart) {
+      startMicrophone(true);
+    }
+
+    const handleFirstInteraction = () => {
+      if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume().catch(() => {});
+      }
+    };
+
+    window.addEventListener('click', handleFirstInteraction, { once: true });
+    window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
+    window.addEventListener('keydown', handleFirstInteraction, { once: true });
+
     return () => {
+      window.removeEventListener('click', handleFirstInteraction);
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
       stopMicrophone();
     };
   }, []);
@@ -691,7 +707,7 @@ export default function App() {
               <div className="clean-card" style={{ padding: '18px', background: isListening ? '#f0fdf4' : '#ffffff', borderColor: isListening ? '#86efac' : '#e2e8f0' }}>
                 <div style={{ marginBottom: '10px' }}>
                   <h3 style={{ fontSize: '15px', fontWeight: '600', color: isListening ? '#14532d' : '#0f172a' }}>
-                    1. Thu Âm Qua Microphone
+                    Thu Âm Qua Microphone
                   </h3>
                 </div>
                 <p style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px' }}>
@@ -711,41 +727,6 @@ export default function App() {
                 </button>
               </div>
 
-              <div className="clean-card" style={{ padding: '18px' }}>
-                <div style={{ marginBottom: '12px' }}>
-                  <h3 style={{ fontSize: '15px', fontWeight: '600' }}>2. Test Với File Âm Thanh Mẫu</h3>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  <button 
-                    disabled={loading}
-                    onClick={() => handleTestSample('sample_explosion.wav', 'Tiếng nổ')} 
-                    className="btn-compact btn-danger"
-                    style={{ justifyContent: 'space-between' }}
-                  >
-                    <span>File 1: Tiếng Nổ (Explosion WAV)</span>
-                  </button>
-
-                  <button 
-                    disabled={loading}
-                    onClick={() => handleTestSample('sample_crying_baby.wav', 'Tiếng khóc')} 
-                    className="btn-compact btn-primary"
-                    style={{ justifyContent: 'space-between' }}
-                  >
-                    <span>File 2: Tiếng Khóc / La Hét (Scream/Cry WAV)</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="clean-card" style={{ padding: '18px' }}>
-                <div style={{ marginBottom: '10px' }}>
-                  <h3 style={{ fontSize: '15px', fontWeight: '600' }}>3. Upload File Âm Thanh</h3>
-                </div>
-                <label style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', border: '1px dashed #cbd5e1', borderRadius: '8px', cursor: 'pointer', background: '#f8fafc', fontSize: '13px', color: '#475569' }}>
-                  <span>Chọn file audio từ máy...</span>
-                  <input type="file" accept="audio/*" onChange={handleFileUpload} style={{ display: 'none' }} />
-                </label>
-              </div>
             </div>
 
             {/* COLUMN 2: TOP 5 PREDICTIONS */}
@@ -753,9 +734,9 @@ export default function App() {
               <div className="clean-card" style={{ padding: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
                   <h3 style={{ fontSize: '16px', fontWeight: '600' }}>Top 5 Dự Đoán AI (YAMNet)</h3>
-                  {(loading || isListening) && (
-                    <span style={{ fontSize: '12px', color: isListening ? '#16a34a' : '#2563eb' }}>
-                      {isListening ? 'Đang nghe Mic...' : 'Đang xử lý...'}
+                  {isListening && (
+                    <span style={{ fontSize: '12px', color: '#16a34a' }}>
+                      Đang nghe Mic...
                     </span>
                   )}
                 </div>

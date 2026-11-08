@@ -110,7 +110,8 @@ class AudioEngine:
             "categories": self.categories,
             "threshold": self.threshold,
             "alarm_sound_enabled": self.alarm_sound_enabled,
-            "email_alert_enabled": self.email_alert_enabled
+            "email_alert_enabled": self.email_alert_enabled,
+            "loaded_model": os.path.basename(self.custom_model_path) if self.custom_model_path else "none"
         }
 
     def update_settings(self, new_settings):
